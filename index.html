@@ -30,7 +30,20 @@
       box-shadow: 0 2px 12px #163b5d0a;
     }
 
-    .brand { display: flex; align-items: center; }
+    .header-brands { display: flex; align-items: center; gap: 24px; min-width: 0; }
+
+    .brand { display: flex; align-items: center; flex-shrink: 0; }
+
+    .erp-link {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      background: #fff;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .erp-logo { display: block; width: 220px; height: auto; }
 
     .gs-logo {
       display: block;
@@ -238,6 +251,8 @@
     @media (max-width: 600px) {
       .site-header { height: 74px; padding: 0 14px; }
       .gs-logo { width: 108px; height: 44px; }
+      .header-brands { gap: 8px; }
+      .erp-logo { width: clamp(112px, 34vw, 160px); }
       .header-note { font-size: 10px; }
 
       .project-banner { padding: 20px 18px; }
@@ -307,11 +322,19 @@
   </svg>
 
   <header class="site-header">
+    <div class="header-brands">
     <a class="brand" href="./" aria-label="관리팀 업무 포털 홈">
       <img class="gs-logo"
            src="https://raw.githubusercontent.com/sskim4912/receipt/main/src/assets/gs-construction-logo.png"
            alt="GS건설">
     </a>
+    <a class="erp-link"
+       href="https://sso.gsenc.com/sso/std/ssoLogin_pin.jsp"
+       target="_blank" rel="noopener noreferrer"
+       aria-label="GS건설 SMART ERP 4.0 로그인 (새 창)">
+      <img class="erp-logo" src="assets/smart-erp.png" alt="GS건설 SMART ERP 4.0">
+    </a>
+    </div>
     <span class="header-note">현장 업무 포털</span>
   </header>
 
