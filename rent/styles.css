@@ -54,3 +54,6 @@
 .step-card[aria-labelledby="step2"] .step-number,
 .step-card[aria-labelledby="step2"] .step-icon{color:var(--blue)}
 .step-card[aria-labelledby="step2"] .step-icon{background:#eaf3fb}
+
+/* The heading receives programmatic focus after login, without a visual frame. */
+#page-title:focus{outline:none}
