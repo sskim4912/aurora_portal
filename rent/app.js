@@ -2,6 +2,7 @@ import { parsePreview } from './csv-preview.js';
 
 const $ = (id) => document.getElementById(id);
 let previewRequest = null;
+let previewLoaded = false;
 
 const SESSION_KEY = 'aurora-rent-session-v1';
 // This digest implements a prototype UI lock only, never server authorization.
@@ -20,7 +21,7 @@ function setSession(name) {
   $('page-title').tabIndex = -1;
   $('page-title').focus();
   status('download-status', '');
-  loadPreview();
+
 }
 
 $('login-form').addEventListener('submit', async (event) => {
@@ -60,6 +61,9 @@ $('login-form').addEventListener('submit', async (event) => {
 $('logout').addEventListener('click', () => {
   try { sessionStorage.removeItem(SESSION_KEY); } catch { /* UI still returns to login. */ }
   previewRequest?.abort();
+  previewLoaded = false;
+  $('preview-section').open = false;
+  $('preview-summary').textContent = '펼쳐서 확인';
   $('preview-head').replaceChildren();
   $('preview-body').replaceChildren();
   $('workspace').hidden = true;
@@ -69,6 +73,19 @@ $('logout').addEventListener('click', () => {
   $('login-form').reset();
   status('login-error', '');
   $('name').focus();
+});
+
+// Account for wrapped header content at every viewport size.
+const headerObserver = new ResizeObserver(([entry]) => {
+  document.documentElement.style.setProperty('--site-header-height', `${entry.target.getBoundingClientRect().height}px`);
+});
+headerObserver.observe(document.querySelector('.site-header'));
+const previewObserver = new ResizeObserver(([entry]) => {
+  document.documentElement.style.setProperty('--preview-toolbar-height', `${entry.target.getBoundingClientRect().height}px`);
+});
+previewObserver.observe(document.querySelector('#preview-section > summary'));
+$('preview-section').addEventListener('toggle', () => {
+  if ($('preview-section').open && !previewLoaded) loadPreview();
 });
 
 async function loadPreview() {
@@ -95,14 +112,16 @@ async function loadPreview() {
     const fragment = document.createDocumentFragment();
     for (const values of parsed.rows) {
       const row = document.createElement('tr');
-      for (const value of values) {
+      for (const [index, value] of values.entries()) {
         const cell = document.createElement('td');
+        cell.dataset.label = parsed.headers[index];
         cell.textContent = value;
         row.append(cell);
       }
       fragment.append(row);
     }
     $('preview-body').replaceChildren(fragment);
+    previewLoaded = true;
     $('preview-summary').textContent = `전체 ${parsed.count.toLocaleString('ko-KR')}건 · ${parsed.headers.length}개 열`;
     status('preview-status', `총 ${parsed.count.toLocaleString('ko-KR')}건을 마지막 행까지 모두 표시했습니다.`, 'success');
   } catch {

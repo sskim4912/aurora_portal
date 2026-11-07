@@ -3,3 +3,54 @@
 .full-preview td{white-space:pre-wrap;min-width:110px;max-width:360px;overflow-wrap:anywhere;overflow:visible;text-overflow:clip}
 
 .guide-content{padding:0 22px 16px}.guide-content h2{font-size:18px;margin:4px 0 12px}.guide-content h3{font-size:14px;margin:24px 0 0}.guide .guide-intro,.guide .guide-note{font-size:12px;line-height:1.9}.execution-steps{padding-left:28px;margin:20px 0;color:var(--navy)}.execution-steps li{padding:0 0 16px 6px;line-height:1.8}.execution-steps li::marker{color:var(--teal);font-weight:750}.execution-steps strong{font-size:13px}.execution-steps p{font-size:12px;margin-top:4px;line-height:1.9}.guide-filename{overflow-wrap:anywhere}.guide .guide-note{padding:12px 14px;background:#f4f8fb;border:1px solid var(--line);border-radius:6px}@media(max-width:390px){.guide-content{padding:0 16px 14px}.execution-steps{padding-left:22px}}
+
+/* Share card rows so text wrapping and download status cannot shift the buttons. */
+@media(min-width:801px){
+  .steps{row-gap:0}
+  .step-card{display:grid;grid-template-rows:subgrid;grid-row:span 7}
+  .step-card>.button{margin-top:0}
+}
+.button-label{min-width:0;overflow-wrap:anywhere}
+
+/* Keep context visible while reading the full CSV. */
+.site-header{position:sticky;top:0;z-index:50;box-shadow:0 2px 12px #163b5d0a}
+.full-preview{padding-top:0}
+.full-preview>summary{list-style:none;cursor:pointer;position:sticky;top:var(--site-header-height,78px);z-index:20;background:#fff;padding:22px 0;flex-wrap:nowrap;border-bottom:1px solid transparent}
+.full-preview>summary::-webkit-details-marker{display:none}
+.full-preview[open]>summary{border-bottom-color:var(--line)}
+.preview-heading-title{min-width:0}
+.preview-controls{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.preview-chevron{font-size:22px;color:var(--teal);transition:transform .15s}
+.full-preview[open] .preview-chevron{transform:rotate(180deg)}
+.full-preview .table-scroll{overflow:visible;border:0;border-radius:0}
+.full-preview table{width:100%;min-width:0;table-layout:fixed;border-collapse:separate;border-spacing:0}
+.full-preview th,.full-preview td{min-width:0;max-width:none;padding:12px 6px;font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible;text-overflow:clip;vertical-align:top}
+.full-preview th{position:sticky;top:calc(var(--site-header-height,78px) + var(--preview-toolbar-height,90px));z-index:10;background:#edf3f8;box-shadow:0 1px 0 var(--line)}
+.full-preview tbody tr:nth-child(even){background:#f9fbfd}
+.full-preview tbody tr:hover{background:#edf7fa}
+.full-preview:not([open]){padding-bottom:0}
+@media(max-width:800px){
+  .full-preview>summary{gap:10px;padding:18px 0}
+  .full-preview .preview-heading h2{font-size:17px}
+  .preview-controls{gap:8px}
+  .preview-controls .badge{font-size:10px;padding:6px}
+  .full-preview table,.full-preview tbody{display:block;width:100%}
+  .full-preview thead{display:none}
+  .full-preview tbody tr{display:block;margin-bottom:18px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .full-preview td{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;padding:10px 14px;width:100%;font-size:12px;border-right:0;line-height:1.7}
+  .full-preview td::before{content:attr(data-label);font-weight:650;color:#567087}
+  .full-preview td:first-child{position:sticky;top:calc(var(--site-header-height,78px) + var(--preview-toolbar-height,90px));z-index:5;background:#eaf3fa;font-weight:700;border-radius:7px 7px 0 0;box-shadow:0 1px 0 var(--line)}
+  .full-preview tbody tr:last-child td{border-bottom:1px solid #e7edf3}
+  .full-preview tbody tr td:last-child{border-bottom:0}
+}
+@media(max-width:390px){
+  .full-preview .preview-heading h2{font-size:15px}
+  .full-preview .eyebrow{font-size:10px;letter-spacing:1px}
+  .preview-controls{gap:5px}
+  .preview-controls .badge{font-size:9px}
+  .full-preview td{grid-template-columns:76px minmax(0,1fr);gap:8px;padding:10px}
+}
+
+.step-card[aria-labelledby="step2"] .step-number,
+.step-card[aria-labelledby="step2"] .step-icon{color:var(--blue)}
+.step-card[aria-labelledby="step2"] .step-icon{background:#eaf3fb}
