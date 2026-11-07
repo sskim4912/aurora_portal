@@ -55,5 +55,5 @@
 .step-card[aria-labelledby="step2"] .step-icon{color:var(--blue)}
 .step-card[aria-labelledby="step2"] .step-icon{background:#eaf3fb}
 
-/* The heading receives programmatic focus after login, without a visual frame. */
-#page-title:focus{outline:none}
+/* The page title is plain text; interactive controls retain focus indicators. */
+#page-title{outline:none;border:0;box-shadow:none}

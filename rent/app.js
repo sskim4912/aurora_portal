@@ -18,8 +18,6 @@ function setSession(name) {
   $('workspace').hidden = false;
   $('user-menu').hidden = false;
   status('login-error', '');
-  $('page-title').tabIndex = -1;
-  $('page-title').focus();
   status('download-status', '');
 
 }
