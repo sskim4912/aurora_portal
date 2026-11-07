@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Aurora Project | 숙소 임차료 전표 작성</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="Aurora Project 업무 포털"><img src="../assets/gs-construction-logo.png" alt="GS건설" width="152" height="60"></a>
+    <div class="header-right"><a class="portal-link" href="../">업무 포털로 돌아가기 <span aria-hidden="true">↗</span></a><div id="user-menu" hidden><span id="user-name"></span><button id="logout" class="button-small" type="button">로그아웃</button></div></div>
+  </header>
+  <main>
+    <section id="login-screen" class="login-layout" aria-labelledby="login-title">
+      <div class="login-intro"><span class="eyebrow">AURORA PROJECT · 관리팀</span><h1 id="login-title">숙소 임차료<br>전표 작성 지원</h1><p>프로그램과 CSV를 준비하는 공간입니다.<br>전표 작성은 Windows PC에서 진행해 주세요.</p><div class="intro-note"><span class="note-symbol" aria-hidden="true">i</span><span>이 페이지는 PC 프로그램을 실행하거나<br> EAS에 전표를 작성하지 않습니다.</span></div></div>
+      <div class="login-card"><span class="badge">업무 지원</span><h2>Aurora Project</h2><p>이름과 접속 비밀번호를 입력해 주세요.</p><form id="login-form"><label for="name">이름</label><input id="name" name="name" autocomplete="name" placeholder="이름을 입력하세요" maxlength="80" required><label for="password">접속 비밀번호</label><input id="password" name="password" type="password" autocomplete="off" placeholder="비밀번호를 입력하세요" required><p id="login-error" class="error" role="alert"></p><button class="button primary" id="login-submit" type="submit">접속하기 <span aria-hidden="true">→</span></button></form><p class="lock-note">시안의 클라이언트 화면 잠금입니다. 서버 인증이나 파일 접근 통제가 아니며, 운영용 인증에는 별도의 서버 세션 또는 인증 서비스가 필요합니다.</p></div>
+    </section>
+    <section id="workspace" hidden aria-labelledby="page-title">
+      <div class="page-heading"><div><span class="eyebrow">AURORA PROJECT · 관리팀</span><h1 id="page-title">숙소 임차료 전표 작성</h1><p>프로그램 준비부터 CSV 관리까지, 아래 순서대로 진행해 주세요.</p></div><span class="badge">PC 프로그램 준비</span></div>
+      <aside class="notice"><span class="note-symbol" aria-hidden="true">i</span><div><strong>Selenium 프로그램은 PC에서 실행됩니다.</strong><p>이 페이지에서 파일을 준비한 후 PC 프로그램의 안내에 따라 전표 작성을 진행하세요.</p></div></aside>
+      <div class="steps">
+        <section class="step-card" aria-labelledby="step1"><div class="step-top"><span class="step-number">STEP 01</span><span class="step-icon" aria-hidden="true">↓</span></div><h2 id="step1">프로그램을 실행해 주세요</h2><p>링크된 파일을 바탕화면에 저장한 뒤, EXE 실행 파일을 실행해 주세요.</p><div class="card-detail"><strong>Windows PC에서 직접 실행</strong><p>OneDrive 공유 화면에서 다운로드한 뒤 실행하세요. EAS 로그인은 PC 프로그램에서 진행합니다.</p></div><a class="button teal" id="program-download" href="https://1drv.ms/u/c/aada2604ee5983ad/IQC5g3E6wqKLQKN6bWZvkfzmAYt-LFuZ0_DpT67NKeONgq4?e=AYAG8f" target="_blank" rel="noopener noreferrer">프로그램 다운로드 <span aria-hidden="true">↗</span><span class="sr-only"> (OneDrive, 새 탭)</span></a><small>공유 화면 열기 · 웹페이지에서 자동 실행하지 않습니다.</small></section>
+        <section class="step-card" aria-labelledby="step2"><div class="step-top"><span class="step-number">STEP 02</span><span class="step-icon" aria-hidden="true">↑</span></div><h2 id="step2">최신 CSV를 업로드하세요</h2><p>숙소 임차료 전표 작성에 사용할 최신 CSV 파일을 선택해 주세요.</p><div id="drop-zone" class="drop-zone"><span class="file-symbol" aria-hidden="true">CSV</span><strong>CSV 파일을 여기에 놓으세요</strong><span>한 개 파일 · 최대 25MB · UTF-8 / CP949 / EUC-KR</span><label class="file-picker" for="csv-file">파일 선택</label><input class="sr-only" type="file" id="csv-file" accept=".csv,text/csv" aria-label="CSV 파일 선택"></div><div id="upload-status" class="status-message" role="status" aria-live="polite">아직 등록된 CSV가 없습니다.</div><small>이 브라우저에만 저장되며 다른 PC·사용자와 공유되지 않습니다.</small></section>
+        <section class="step-card" aria-labelledby="step3"><div class="step-top"><span class="step-number">STEP 03</span><span class="step-icon" aria-hidden="true">↓</span></div><h2 id="step3">CSV를 다운로드하세요</h2><p>등록된 최신 CSV를 내려받아 PC 자동입력 프로그램에서 사용하세요.</p><div class="card-detail file-info" id="latest-info"><strong>등록된 CSV가 없습니다</strong><p>STEP 02에서 정상 CSV를 먼저 업로드해 주세요.</p></div><button class="button teal" id="csv-download" type="button" disabled>최신 CSV 다운로드 <span aria-hidden="true">↓</span></button><small>전표 생성 결과나 변환 파일이 아닌, 업로드한 원본 그대로입니다.</small><p id="download-status" class="status-message" role="status" aria-live="polite"></p></section>
+      </div>
+      <section id="preview-section" class="preview-card" hidden aria-labelledby="preview-title"><div class="preview-heading"><div><span class="eyebrow">CSV PREVIEW</span><h2 id="preview-title">등록된 CSV 미리보기</h2></div><span id="preview-summary" class="badge"></span></div><p>처음 5건을 표시합니다. 입력 순서 행과 항목명 행을 포함한 원본 파일은 변경하지 않습니다.</p><div class="table-scroll" tabindex="0" role="region" aria-label="CSV 처음 5건 미리보기, 가로로 스크롤할 수 있습니다"><table><thead id="preview-head"></thead><tbody id="preview-body"></tbody></table></div></section>
+      <details class="guide"><summary>사용 전 확인해 주세요</summary><ul><li>프로그램은 Windows PC에서 직접 실행합니다. 웹페이지가 PC의 EXE를 자동 실행하지 않습니다.</li><li>CSV의 입력 순서 행·항목명 행·원본 인코딩을 보존합니다. 다운로드는 원본 바이트 그대로입니다.</li><li>시안의 CSV는 해당 브라우저에만 저장되며, 로그아웃해도 최신 CSV는 남습니다. 공용 PC 이용 시 유의해 주세요.</li><li>EAS 로그인과 전표 작성·검토는 PC 프로그램의 실제 동작에 따라 진행합니다.</li><li>웹페이지의 로그인 비밀번호를 EAS에 전달하거나 EAS 비밀번호로 사용하지 않습니다.</li><li>현재 접속 화면은 클라이언트 화면 잠금이며 서버 인증이나 파일 접근 통제가 아닙니다. 운영 인증에는 별도의 서버 세션 또는 인증 서비스가 필요합니다.</li></ul></details>
+      <p class="local-note">브라우저 로컬 저장 시안 · 서버 공용 저장 및 EAS 연동 없음</p>
+    </section>
+  </main>
+  <footer>Aurora Project <span>관리팀 업무 지원</span></footer>
+  <noscript>이 페이지는 JavaScript가 필요합니다. 브라우저 설정에서 JavaScript를 허용해 주세요.</noscript>
+</body>
+</html>
