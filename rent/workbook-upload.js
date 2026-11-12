@@ -7,6 +7,12 @@ let revision = 0;
 let retry = null;
 let latest = null;
 let configPromise;
+function showUploadAccess(authorized) {
+  $('workbook-upload-form').hidden = !authorized;
+  $('workbook-login').hidden = authorized;
+  $('workbook-auth-hint').hidden = authorized;
+}
+
 async function endpoint() {
   configPromise ||= fetch(new URL('upload-config.json', import.meta.url), {cache: 'no-store'})
     .then(r => { if (!r.ok) throw Error(); return r.json(); });
@@ -35,24 +41,26 @@ export async function authenticateUpload(name, password) {
   if (!/^[a-f0-9]{64}$/.test(data.session) || !Number.isFinite(data.expiresAt)) throw Error('로그인 응답을 확인할 수 없습니다.');
   session = data;
   try { sessionStorage.setItem(KEY, JSON.stringify(data)); } catch (_) { /* Current tab still works. */ }
-  $('workbook-upload-form').hidden = false;
+  showUploadAccess(true);
 }
 export function clearUploadSession() {
   revision++;
   session = null;
   retry = null;
   $('workbook-upload-form').reset();
-  $('workbook-upload-form').hidden = true;
+  showUploadAccess(false);
+  $('workbook-auth-dialog').close();
+  $('workbook-auth-form').reset();
   $('workbook-upload-status').textContent = '';
   try { sessionStorage.removeItem(KEY); } catch (_) { /* Memory is cleared. */ }
 }
 export function restoreUploadSession(name) {
-  if (name !== '김성석') return;
+  showUploadAccess(false);
   try {
     const data = JSON.parse(sessionStorage.getItem(KEY));
     if (/^[a-f0-9]{64}$/.test(data?.session) && data.expiresAt > Date.now()) {
       session = data;
-      $('workbook-upload-form').hidden = false;
+      showUploadAccess(true);
     }
   } catch (_) { /* Login again to upload. */ }
 }
@@ -97,7 +105,12 @@ $('workbook-upload-form').addEventListener('submit', async event => {
   if (busy) return;
   const status = $('workbook-upload-status');
   const file = $('workbook-file').files[0];
-  if (!session || session.expiresAt <= Date.now()) { status.textContent = '로그아웃 후 다시 접속해 주세요.'; return; }
+  if (!session || session.expiresAt <= Date.now()) {
+    showUploadAccess(false);
+    status.textContent = '업로드 인증이 만료되었습니다. 엑셀 업로드 버튼에서 다시 확인해 주세요.';
+    $('workbook-auth-dialog').showModal();
+    return;
+  }
   if (!file || !/\.xlsx$/i.test(file.name) || /[/\\\x00-\x1f\x7f]/.test(file.name) || file.name.length > 180 || !file.size || file.size > MAX_BYTES) {
     status.textContent = '최대 5MiB의 엑셀 .xlsx 파일을 선택해 주세요.'; return;
   }
@@ -153,3 +166,34 @@ $('workbook-download').addEventListener('click', async () => {
 refreshLatest();
 setInterval(refreshLatest, 60000);
 document.addEventListener('visibilitychange', refreshLatest);
+
+$('workbook-login').addEventListener('click', () => {
+  $('workbook-auth-error').textContent = '';
+  $('workbook-auth-password').value = '';
+  $('workbook-auth-dialog').showModal();
+  $('workbook-auth-password').focus();
+});
+$('workbook-auth-cancel').addEventListener('click', () => $('workbook-auth-dialog').close());
+$('workbook-auth-dialog').addEventListener('close', () => {
+  $('workbook-auth-password').value = '';
+});
+$('workbook-auth-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = $('workbook-auth-submit');
+  if (button.disabled) return;
+  button.disabled = true;
+  $('workbook-auth-error').textContent = '';
+  let password = $('workbook-auth-password').value;
+  $('workbook-auth-password').value = '';
+  try {
+    await authenticateUpload('김성석', password);
+    $('workbook-auth-dialog').close();
+    $('workbook-upload-status').textContent = '업로드할 엑셀 파일을 선택해 주세요.';
+    $('workbook-file').focus();
+  } catch (error) {
+    $('workbook-auth-error').textContent = error.message;
+  } finally {
+    password = '';
+    button.disabled = false;
+  }
+});

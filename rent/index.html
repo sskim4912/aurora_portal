@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Aurora Project | 숙소 임차료 전표 작성</title>
-  <link rel="stylesheet" href="styles.css?v=workbook-upload">
-  <script src="app.js?v=workbook-upload" type="module"></script>
+  <link rel="stylesheet" href="styles.css?v=workbook-access2">
+  <script src="app.js?v=workbook-access2" type="module"></script>
 </head>
 <body>
   <header class="site-header">
@@ -27,6 +27,8 @@
           <h2 id="workbook-title">최신 엑셀 보관함</h2>
           <p>최신 엑셀 원본을 저장하고 어느 PC에서든 내려받으세요.</p>
           <div class="card-detail file-info" id="workbook-info">아직 등록된 엑셀 파일이 없습니다.</div>
+          <button id="workbook-login" type="button" class="button workbook-primary">엑셀 업로드 <span aria-hidden="true">↑</span></button>
+          <p id="workbook-auth-hint" class="workbook-auth-hint">김성석 계정 확인 후 파일을 업로드할 수 있습니다.</p>
           <form id="workbook-upload-form" hidden>
             <label for="workbook-file">저장할 엑셀 파일</label>
             <input id="workbook-file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
@@ -66,6 +68,16 @@
       <p class="local-note">공통 CSV 다운로드 · 웹페이지에서 EXE 실행 및 EAS 전표 작성 없음</p>
     </section>
   </main>
+  <dialog id="workbook-auth-dialog" aria-labelledby="workbook-auth-title">
+    <form id="workbook-auth-form">
+      <h2 id="workbook-auth-title">엑셀 업로드 계정 확인</h2>
+      <p>김성석 계정의 비밀번호를 입력해 주세요.</p>
+      <label for="workbook-auth-password">비밀번호</label>
+      <input id="workbook-auth-password" type="password" autocomplete="current-password" required>
+      <p id="workbook-auth-error" class="error" role="alert"></p>
+      <div class="workbook-dialog-actions"><button id="workbook-auth-cancel" type="button" class="button-small">취소</button><button id="workbook-auth-submit" type="submit" class="button workbook-primary">확인</button></div>
+    </form>
+  </dialog>
   <footer>Aurora Project <span>관리팀 업무 지원</span></footer>
   <noscript>이 페이지는 JavaScript가 필요합니다. 브라우저 설정에서 JavaScript를 허용해 주세요.</noscript>
 </body>

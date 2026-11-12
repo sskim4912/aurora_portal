@@ -46,6 +46,18 @@ const fs=require('node:fs');
   assert.equal(await page.evaluate(()=>sessionStorage.getItem('aurora-workbook-upload-session')),null);
   await page.locator('#name').fill('일반 사용자');await page.locator('#password').fill(process.env.RENT_TEST_UI_PASSWORD);await page.locator('#login-submit').click();
   await page.locator('#workspace').waitFor({state:'visible'});assert(await page.locator('#workbook-upload-form').isHidden());assert(await page.locator('#workbook-download').isVisible());
+  // A user who logged in before uploads were deployed must still see an upload entry.
+  await page.evaluate(()=>{sessionStorage.removeItem('aurora-workbook-upload-session');sessionStorage.setItem('aurora-rent-session-v1',JSON.stringify({name:'김성석',unlocked:true}));});
+  await page.reload();await page.locator('#workspace').waitFor({state:'visible'});
+  assert(await page.locator('#workbook-upload-form').isHidden());
+  assert(await page.locator('#workbook-login').isVisible());
+  await page.locator('#workbook-login').click();
+  await page.locator('#workbook-auth-password').fill(process.env.RENT_TEST_UI_PASSWORD);
+  await page.locator('#workbook-auth-submit').click();
+  await page.locator('#workbook-upload-form').waitFor({state:'visible'});
+  assert(await page.locator('#workbook-login').isHidden());
+  assert.equal(await page.locator('#workbook-auth-password').inputValue(),'');
+  assert.equal(await page.locator('#workbook-submit').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(121, 80, 180)');
   assert.deepEqual(errors,[]);console.log('Passed: admin login, reload session, failure/retry idempotence, confirmed save, original download, 4 widths, logout, ordinary user read-only, no JS errors.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

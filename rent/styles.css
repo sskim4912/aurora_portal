@@ -72,3 +72,19 @@
 @media (max-width: 1100px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .workbook-card { grid-column: 1 / -1; } }
 @media (max-width: 680px) { .steps { grid-template-columns: minmax(0, 1fr); } }
 @media (min-width: 801px) { .workbook-card { display: flex; flex-direction: column; gap: 16px; } }
+
+/* The Excel card uses purple so it is distinct from CSV teal and program blue. */
+.workbook-card { border-color: #ded3f4; background: linear-gradient(155deg, #faf7ff, #fff 65%); }
+.workbook-card .step-number, .workbook-card h2 { color: #6941a5; }
+.workbook-card .step-icon { color: #7745b4; background: #efe7fb; }
+.workbook-card .card-detail { border-color: #e4daf4; background: #f6f1fc; }
+.workbook-card .button, .workbook-primary { background: #7950b4; color: #fff; border: 0; }
+.workbook-card .button:hover, .workbook-primary:hover { background: #633b9c; }
+.workbook-auth-hint { font-size: 12px; color: #785a99; }
+#workbook-auth-dialog { border: 1px solid #ded3f4; border-radius: 16px; padding: 28px; width: min(420px, calc(100% - 32px)); color: var(--navy); }
+#workbook-auth-dialog::backdrop { background: #192f4970; }
+#workbook-auth-form { display: grid; gap: 16px; }
+#workbook-auth-form h2 { font-size: 20px; }
+#workbook-auth-form input { width: 100%; padding: 12px; border: 1px solid #cab9e0; border-radius: 8px; }
+.workbook-dialog-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.workbook-dialog-actions .button { width: auto; min-width: 100px; }
