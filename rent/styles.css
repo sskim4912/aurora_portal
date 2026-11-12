@@ -57,3 +57,9 @@
 
 /* The page title is plain text; interactive controls retain focus indicators. */
 #page-title{outline:none;border:0;box-shadow:none}
+
+/* Monthly shared CSV registration. */
+@media(min-width:1101px){.steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.upload-card .step-number,.upload-card .step-icon{color:#7746ad}.upload-card .step-icon{background:#f2eafb}.purple{background:#7746ad;color:white}
+.upload-card form{margin:12px 0}.upload-card input[type=file]{max-width:100%;font-size:12px}.upload-card .button{margin-top:12px}.upload-card .card-detail{min-width:0}
+#latest-info{white-space:pre-line}.upload-card{overflow-wrap:anywhere}

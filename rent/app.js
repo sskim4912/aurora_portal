@@ -1,4 +1,5 @@
 import { parsePreview } from './csv-preview.js';
+import { clearAdmin } from './shared-csv.js';
 
 const $ = (id) => document.getElementById(id);
 let previewRequest = null;
@@ -57,6 +58,7 @@ $('login-form').addEventListener('submit', async (event) => {
 });
 
 $('logout').addEventListener('click', () => {
+  clearAdmin();
   try { sessionStorage.removeItem(SESSION_KEY); } catch { /* UI still returns to login. */ }
   previewRequest?.abort();
   previewLoaded = false;
@@ -141,3 +143,10 @@ try {
 } catch {
   status('login-error', '접속 상태를 복원할 수 없습니다. 다시 접속해 주세요.');
 }
+
+document.addEventListener('csv-latest-changed', () => {
+  previewRequest?.abort(); previewLoaded=false;
+  $('preview-head').replaceChildren(); $('preview-body').replaceChildren();
+  $('preview-summary').textContent='펼쳐서 확인';
+  if ($('preview-section').open) loadPreview();
+});
