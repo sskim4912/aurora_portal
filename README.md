@@ -17,7 +17,7 @@ GitHub Pages용 워크플로는 `.github/workflows/pages.yml`입니다.
 
 ## 숙소 임차료 전표 작성 지원
 
-`rent/`는 Windows Selenium 프로그램과 CSV를 준비하는 정적 페이지입니다. STEP 01은 관리자 CSV 등록, STEP 02는 최신 원본 다운로드, STEP 03은 OneDrive 프로그램 공유 화면 열기입니다. 관리자 등록은 별도 서버 API가 연결된 경우에만 사용합니다. 현재 운영 서비스 연결과 배포는 하지 않았습니다. 연결·검증 방법은 [server/README.md](server/README.md)를 참고하세요.
+`rent/`는 Windows Selenium 프로그램과 CSV를 준비하는 정적 페이지입니다. STEP 01은 관리자 CSV 등록, STEP 02는 최신 원본 다운로드, STEP 03은 OneDrive 프로그램 공유 화면 열기입니다. 관리자 등록은 별도 서버 API가 연결된 경우에만 사용합니다. 현재 운영 서비스 연결과 배포는 하지 않았습니다. 연결·검증 방법은 [firebase/README.md](firebase/README.md)를 참고하세요.
 
 - 프로그램 실행, EAS 로그인·전표 작성은 Windows PC에서 직접 진행합니다. ‘사용 전 확인해 주세요’를 누르면 제공된 화면 ①~⑨ 순서의 프로그램 실행 방법(다운로드 열기 → 출처 확인 및 경고 처리 → 파일 열기 → CSV 선택)이 펼쳐집니다.
 - 접속 화면은 클라이언트 화면 잠금입니다. 비밀번호 원문을 저장·로그 출력하지 않고 이름과 접속 상태만 sessionStorage에 저장합니다. 서버 인증이나 파일 접근 통제가 아닙니다.
@@ -25,3 +25,5 @@ GitHub Pages용 워크플로는 `.github/workflows/pages.yml`입니다.
 - 공개 배포 후 파일 URL은 로그인과 무관하게 누구나 접근할 수 있습니다. 새 서버 API는 서버에서 관리자 인증을 검사하며, 공용 CSV를 영속 디스크에 저장합니다. API가 연결되지 않은 정적 페이지는 기존 CSV를 유지하며 미연결 상태를 표시합니다. 기존 브라우저 IndexedDB의 로컬 파일은 더 이상 읽거나 다운로드 대상으로 사용하지 않습니다.
 - 명시적인 배포 요청이 있을 때만 main에 반영하고 기존 Pages workflow로 배포합니다. `rent/` 전체를 복사하므로 공통 다운로드 CSV와 전체 미리보기 모듈도 포함됩니다.
 - 로컬 실행: `python3 -m http.server 8000 --bind 127.0.0.1` 후 `/rent/` 접속.
+
+Firebase 공개 설정은 `firebase/client.js`, 서버 함수는 `functions/src/`, 배포 대상은 `.firebaserc`에 있습니다. `npm ci && npm --prefix functions ci && npm run build:firebase`로 SDK와 함수를 빌드합니다. SDK 번들은 Pages가 기존 방식대로 복사할 수 있도록 `rent/vendor/`에 포함합니다. 관리자 토큰은 Firebase 메모리 인증에만 보관합니다.

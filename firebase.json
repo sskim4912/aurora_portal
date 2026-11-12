@@ -1,0 +1,5 @@
+{
+  "functions": [{"source":"functions","codebase":"rent-csv","runtime":"nodejs22","predeploy":["npm run build:firebase"]}],
+  "firestore": {"rules":"firebase/firestore.rules"},
+  "storage": {"rules":"firebase/storage.rules"}
+}

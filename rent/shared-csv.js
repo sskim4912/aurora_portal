@@ -1,7 +1,14 @@
 import { parsePreview } from './csv-preview.js';
 const $ = id => document.getElementById(id);
 const configured = document.querySelector('meta[name="rent-api"]').content.trim().replace(/\/$/, '');
-const base = configured || location.origin;
+let service = null;
+const localDemo = ['localhost', '127.0.0.1'].includes(location.hostname);
+let firebaseUnavailable = false;
+if (!localDemo && !configured) {
+  try { service = (await import('./vendor/firebase-client.js')).firebaseService; }
+  catch { firebaseUnavailable = true; }
+}
+const base = service?.base || configured || location.origin;
 let token = '';
 let connected = false;
 let validated = null;
@@ -14,10 +21,11 @@ export function clearAdmin() {
   $('admin-login').hidden = true;
   $('admin-open').hidden = !connected;
   $('upload-submit').disabled = true;
+  if (service) { service.logout().catch(()=>{}); return; }
   if (previous) fetch(`${base}/api/logout`, {method:'POST',headers:{Authorization:`Bearer ${previous}`}}).catch(()=>{});
 }
 async function api(path, options={}) {
-  const response = await fetch(base+path, {cache:'no-store',...options,headers:{...(token?{Authorization:`Bearer ${token}`} : {}),...options.headers}});
+  const response = await fetch(base+path, {cache:'no-store',...options,headers:{...(token?{Authorization:`Bearer ${service ? await service.token() : token}`} : {}),...options.headers}});
   if (!response.ok) {
     if (response.status === 401 && path !== '/api/login') clearAdmin();
     const data = await response.json().catch(()=>({}));
@@ -38,13 +46,14 @@ async function latest() {
 }
 async function connect() {
   try {
+    if(firebaseUnavailable) throw new Error('Firebase 연결 실패');
     await api('/api/session');
     connected = true;
     $('service-status').textContent = '공용 CSV 등록 서비스가 연결되었습니다.';
     $('admin-open').hidden = false;
     try { await latest(); } catch { $('service-status').textContent = '최신 등록 파일을 확인하지 못해 기존 공통 파일을 제공합니다.'; }
   } catch {
-    $('service-status').textContent = '관리자 등록 서비스 미연결 · 기존 공통 CSV를 제공합니다.';
+    $('service-status').textContent = 'Firebase 등록 서비스 미연결 · 기존 공통 CSV를 제공합니다.';
   }
 }
 $('admin-open').onclick = ()=>{$('admin-login').hidden = !$('admin-login').hidden;};
@@ -52,11 +61,14 @@ $('admin-login').onsubmit = async event=>{
   event.preventDefault();
   const password=$('admin-password').value; $('admin-password').value='';
   try {
-    const response = await api('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('admin-user').value,password})});
-    token=(await response.json()).token;
+    if (service) token=await service.login($('admin-user').value,password);
+    else {
+      const response = await api('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('admin-user').value,password})});
+      token=(await response.json()).token;
+    }
     $('admin-login').hidden=true; $('upload-form').hidden=$('admin-logout').hidden=false;
     $('admin-open').hidden=true; $('upload-status').textContent='관리자 인증 완료 · 파일과 대상 월을 선택해 주세요.';
-  } catch(error){$('upload-status').textContent=error.message;}
+  } catch(error){$('upload-status').textContent=service ? error.userMessage || '관리자 로그인에 실패했습니다. 이메일·비밀번호·관리자 권한과 서비스 설정을 확인해 주세요.' : error.message;}
 };
 $('admin-logout').onclick=()=>{clearAdmin();$('admin-open').hidden=false;$('upload-status').textContent='관리자 로그아웃 완료';};
 $('csv-file').onchange=async()=>{
