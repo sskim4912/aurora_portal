@@ -12,6 +12,11 @@ import re
 import shutil
 import subprocess
 
+# Work both as a CLI and when loaded by the existing tests.
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from workbooks import validate_optional_workbook
+
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 25 * 1024 * 1024
 ORDER = '반영순서,1,3,4,5,6,7,16,19,20,22,23,24,28'.split(',')
@@ -101,6 +106,7 @@ def prepare(output, root=ROOT):
     data = path.read_bytes()
     metadata = validate(data, path.name)
     metadata.update(registeredAt=registered, version=commit, href='downloads/' + path.name)
+    validate_optional_workbook(root)
     output = output.resolve()
     # Validate everything before touching an existing successful output.
     if output == root or output.is_relative_to(root / 'rent') or root.is_relative_to(output):

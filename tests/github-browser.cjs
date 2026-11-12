@@ -29,7 +29,7 @@ const fs=require('node:fs');const crypto=require('node:crypto');
   await page.locator('#name').fill('가상 시연');await page.locator('#password').fill(process.env.RENT_TEST_UI_PASSWORD);await page.locator('#login-submit').click();await page.locator('#workspace').waitFor({state:'visible'});
   await page.reload();await page.locator('#workspace').waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#latest-info').textContent.includes('가상_20261101_1.csv'));
   assert.equal(await page.locator('#preview-section').getAttribute('open'),null);
-  assert.equal(await page.locator('.step-card').count(),2);assert.deepEqual(await page.locator('.step-number').allTextContents(),['STEP 01','STEP 02']);assert.equal(await page.locator('#github-upload').count(),0);
+  assert.equal(await page.locator('.step-card').count(),3);assert.deepEqual(await page.locator('.step-number').allTextContents(),['EXCEL FILE','STEP 01','STEP 02']);assert.equal(await page.locator('#github-upload').count(),0);
   assert.equal(await page.locator('#csv-download').getAttribute('download'),fakeMeta.filename);
   assert.equal(await page.locator('#program-download').getAttribute('href'),'https://1drv.ms/u/c/aada2604ee5983ad/IQCDA2ymGuNdS4yapRTnLPqLAZZSCGvDHOTKGCrTj1ouiRM?e=YSmxbV');
   for(const width of [320,390,768,1440]){
@@ -49,6 +49,6 @@ const fs=require('node:fs');const crypto=require('node:crypto');
   // Metadata outage still leaves the correct baked original download URL.
   const fallback=await browser.newContext();await fallback.route('**/latest.json',r=>r.fulfill({status:503,body:''}));const p=await fallback.newPage();await p.goto(origin+'/rent/');
   assert((await p.locator('#csv-download').getAttribute('href')).startsWith('downloads/'));await fallback.close();
-  console.log('Passed: independent downloads match original hash; login/refresh/logout; two-step cards; 4 widths; preview/escape/sticky; no JS errors or external services.');
+  console.log('Passed: independent downloads match original hash; login/refresh/logout; workbook and two-step cards; 4 widths; preview/escape/sticky; no JS errors or external services.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -1,3 +1,4 @@
+import {authenticateUpload, clearUploadSession, restoreUploadSession} from './workbook-upload.js';
 import { parsePreview } from './csv-preview.js';
 import './shared-csv.js';
 
@@ -15,6 +16,7 @@ function status(id, message, state = '') {
 
 function setSession(name) {
   $('user-name').textContent = `${name}님`;
+  restoreUploadSession(name);
   $('login-screen').hidden = true;
   $('workspace').hidden = false;
   $('user-menu').hidden = false;
@@ -37,7 +39,6 @@ $('login-form').addEventListener('submit', async (event) => {
   $('login-submit').disabled = true;
   try {
     const bytes = new TextEncoder().encode(password);
-    password = '';
     const digest = await crypto.subtle.digest('SHA-256', bytes);
     bytes.fill(0);
     const hex = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -46,6 +47,13 @@ $('login-form').addEventListener('submit', async (event) => {
       $('password').focus();
       return;
     }
+    if (name === '김성석') {
+      try { await authenticateUpload(name, password); }
+      catch (error) {
+        document.getElementById('workbook-upload-status').textContent = error.message;
+      }
+    }
+    password = '';
     // Store only the name/UI state in this tab, never a password or its digest.
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, unlocked: true }));
     setSession(name);
@@ -58,6 +66,7 @@ $('login-form').addEventListener('submit', async (event) => {
 });
 
 $('logout').addEventListener('click', () => {
+  clearUploadSession();
   try { sessionStorage.removeItem(SESSION_KEY); } catch { /* UI still returns to login. */ }
   previewRequest?.abort();
   previewLoaded = false;
