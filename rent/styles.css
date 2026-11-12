@@ -4,12 +4,6 @@
 
 .guide-content{padding:0 22px 16px}.guide-content h2{font-size:18px;margin:4px 0 12px}.guide-content h3{font-size:14px;margin:24px 0 0}.guide .guide-intro,.guide .guide-note{font-size:12px;line-height:1.9}.execution-steps{padding-left:28px;margin:20px 0;color:var(--navy)}.execution-steps li{padding:0 0 16px 6px;line-height:1.8}.execution-steps li::marker{color:var(--teal);font-weight:750}.execution-steps strong{font-size:13px}.execution-steps p{font-size:12px;margin-top:4px;line-height:1.9}.guide-filename{overflow-wrap:anywhere}.guide .guide-note{padding:12px 14px;background:#f4f8fb;border:1px solid var(--line);border-radius:6px}@media(max-width:390px){.guide-content{padding:0 16px 14px}.execution-steps{padding-left:22px}}
 
-/* Share card rows so text wrapping and download status cannot shift the buttons. */
-@media(min-width:801px){
-  .steps{row-gap:0}
-  .step-card{display:grid;grid-template-rows:subgrid;grid-row:span 7}
-  .step-card>.button{margin-top:0}
-}
 .button-label{min-width:0;overflow-wrap:anywhere}
 
 /* Keep context visible while reading the full CSV. */
@@ -69,9 +63,9 @@
 .workbook-card .file-info { white-space: pre-wrap; overflow-wrap: anywhere; }
 .workbook-card button { width: 100%; cursor: pointer; }
 .workbook-card button:disabled { opacity: .6; cursor: wait; }
-@media (max-width: 1100px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .workbook-card { grid-column: 1 / -1; } }
-@media (max-width: 680px) { .steps { grid-template-columns: minmax(0, 1fr); } }
-@media (min-width: 801px) { .workbook-card { display: flex; flex-direction: column; gap: 16px; } }
+
+
+
 
 /* The Excel card uses purple so it is distinct from CSV teal and program blue. */
 .workbook-card { border-color: #ded3f4; background: linear-gradient(155deg, #faf7ff, #fff 65%); }
@@ -88,3 +82,33 @@
 #workbook-auth-form input { width: 100%; padding: 12px; border: 1px solid #cab9e0; border-radius: 8px; }
 .workbook-dialog-actions { display: flex; justify-content: flex-end; gap: 12px; }
 .workbook-dialog-actions .button { width: auto; min-width: 100px; }
+
+/* All three cards share the same seven content rows and primary action size. */
+.steps { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 20px; row-gap: 16px; }
+.step-card { display: grid; grid-template-rows: subgrid; grid-row: span 7; padding: 25px; min-height: 0; align-content: start; }
+.step-card > .step-top, .step-card > h2, .step-card > p,
+.step-card > .card-detail, .step-card > .button,
+.step-card > small, .step-card > .status-message { margin: 0; }
+.step-card > .step-top { height: 34px; }
+.step-card > h2 { font-size: 19px; line-height: 1.5; }
+.step-card > p { font-size: 13px; line-height: 1.8; }
+.step-card > .card-detail { min-height: 160px; padding: 18px 16px; align-self: stretch; }
+.step-card > .button, .card-actions, .card-actions > .button { height: 52px; min-height: 52px; max-height: 52px; }
+.step-card > .button, .card-actions > .button { padding: 10px 14px; font-size: 14px; line-height: 1.5; }
+.card-actions { min-width: 0; }
+.card-actions > .button { margin: 0; }
+.workbook-card #workbook-upload-form { margin: 16px 0 0; display: grid; gap: 8px; }
+.workbook-card #workbook-upload-form label { margin: 0; font-size: 12px; }
+.workbook-card #workbook-file { font-size: 12px; line-height: 1.6; }
+.workbook-card #workbook-file::file-selector-button { border: 1px solid #d5c4ec; border-radius: 5px; padding: 6px 10px; margin-right: 8px; color: #6941a5; background: #fff; cursor: pointer; }
+.card-footnote { align-self: start; }
+.card-footnote small, .card-footnote .workbook-auth-hint { margin: 0; font-size: 11px; line-height: 1.8; }
+.workbook-card .workbook-download-link { display: inline-flex; align-items: center; gap: 8px; width: auto; padding: 0; margin-top: 6px; border: 0; color: #6941a5; background: transparent; font-size: 12px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.card-status { min-width: 0; align-self: start; }
+.card-status .status-message { margin: 0; }
+.card-status .status-message:empty { display: none; }
+@media (max-width: 1000px) {
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .step-card { grid-row: auto; grid-column: auto; grid-template-rows: auto auto auto minmax(160px, auto) 52px auto auto; gap: 16px; padding: 24px; }
+}
+@media (max-width: 390px) { .step-card { padding: 20px; } }

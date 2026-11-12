@@ -41,6 +41,26 @@ const fs=require('node:fs');
   for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:1000});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
+  await page.setViewportSize({width:1440,height:1000});
+  const aligned = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('.step-card')];
+    const rect = el => {const r=el.getBoundingClientRect();return {y:r.y,height:r.height,width:r.width};};
+    return {
+      cards: cards.map(rect),
+      headers: cards.map(c=>rect(c.querySelector('.step-top'))),
+      titles: cards.map(c=>rect(c.querySelector('h2'))),
+      details: cards.map(c=>rect(c.querySelector(':scope > .card-detail'))),
+      actions: [document.querySelector('#workbook-submit'),document.querySelector('#csv-download'),document.querySelector('#program-download')].map(rect)
+    };
+  });
+  for(const key of ['cards','headers','titles','details','actions']){
+    const rows=aligned[key];
+    assert(Math.max(...rows.map(r=>r.y))-Math.min(...rows.map(r=>r.y))<1, key+' top alignment');
+    assert(Math.max(...rows.map(r=>r.height))-Math.min(...rows.map(r=>r.height))<1,key+' equal height');
+    assert(Math.max(...rows.map(r=>r.width))-Math.min(...rows.map(r=>r.width))<1,key+' equal width');
+  }
+  assert(aligned.actions.every(r=>r.height===52));
+  await page.evaluate(()=>window.scrollTo(0,0));
   fs.mkdirSync('/workspace/aurora-artifacts',{recursive:true});await page.screenshot({path:'/workspace/aurora-artifacts/workbook-upload.png',fullPage:true});
   await page.locator('#logout').click();assert(await page.locator('#workbook-upload-form').isHidden());
   assert.equal(await page.evaluate(()=>sessionStorage.getItem('aurora-workbook-upload-session')),null);

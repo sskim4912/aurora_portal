@@ -9,6 +9,7 @@ let latest = null;
 let configPromise;
 function showUploadAccess(authorized) {
   $('workbook-upload-form').hidden = !authorized;
+  $('workbook-submit').hidden = !authorized;
   $('workbook-login').hidden = authorized;
   $('workbook-auth-hint').hidden = authorized;
 }

@@ -1,4 +1,4 @@
-import {authenticateUpload, clearUploadSession, restoreUploadSession} from './workbook-upload.js?v=workbook-access2';
+import {authenticateUpload, clearUploadSession, restoreUploadSession} from './workbook-upload.js?v=aligned-cards3';
 import { parsePreview } from './csv-preview.js';
 import './shared-csv.js';
 
