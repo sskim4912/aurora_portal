@@ -18,13 +18,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Prepare public files
-        run: |
-          mkdir -p _site
-          cp index.html _site/index.html
-          cp -R assets _site/assets
-          cp -R rent _site/rent
-          touch _site/.nojekyll
+        with:
+          fetch-depth: 0
+      - name: Test CSV validation
+        run: python3 -m unittest discover -s tests -v
+      - name: Validate CSV and prepare public files
+        run: python3 scripts/prepare_rent.py --output _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,7 +1,0 @@
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // All access to the rent pointer goes through the verified server API.
-    match /rentCsv/{document=**} { allow read, write: if false; }
-  }
-}

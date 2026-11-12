@@ -1,5 +1,5 @@
 import { parsePreview } from './csv-preview.js';
-import { clearAdmin } from './shared-csv.js';
+import './shared-csv.js';
 
 const $ = (id) => document.getElementById(id);
 let previewRequest = null;
@@ -58,7 +58,6 @@ $('login-form').addEventListener('submit', async (event) => {
 });
 
 $('logout').addEventListener('click', () => {
-  clearAdmin();
   try { sessionStorage.removeItem(SESSION_KEY); } catch { /* UI still returns to login. */ }
   previewRequest?.abort();
   previewLoaded = false;

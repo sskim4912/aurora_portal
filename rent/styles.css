@@ -63,3 +63,5 @@
 .upload-card .step-number,.upload-card .step-icon{color:#7746ad}.upload-card .step-icon{background:#f2eafb}.purple{background:#7746ad;color:white}
 .upload-card form{margin:12px 0}.upload-card input[type=file]{max-width:100%;font-size:12px}.upload-card .button{margin-top:12px}.upload-card .card-detail{min-width:0}
 #latest-info{white-space:pre-line}.upload-card{overflow-wrap:anywhere}
+
+#admin-guide{margin-top:14px;font-size:12px;line-height:1.8}#admin-guide summary{color:#7746ad;font-weight:650}#admin-guide p{margin-top:10px}.admin-actions{display:block;margin-top:12px;color:#7746ad;font-size:12px}.upload-card #github-upload{margin-top:16px}
