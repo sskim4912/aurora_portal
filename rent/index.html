@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Aurora Project | 숙소 임차료 전표 작성</title>
-  <link rel="stylesheet" href="styles.css?v=github-csv">
-  <script src="app.js?v=github-csv" type="module"></script>
+  <link rel="stylesheet" href="styles.css?v=two-steps">
+  <script src="app.js?v=two-steps" type="module"></script>
 </head>
 <body>
   <header class="site-header">
@@ -22,16 +22,15 @@
       <div class="page-heading"><div><span class="eyebrow">AURORA PROJECT · 관리팀</span><h1 id="page-title">숙소 임차료 전표 작성</h1></div></div>
       <aside class="notice"><span class="note-symbol" aria-hidden="true">i</span><div><strong>Selenium 프로그램은 PC에서 실행됩니다.</strong><p>이 페이지에서 파일을 준비한 후 PC 프로그램의 안내에 따라 전표 작성을 진행하세요.</p><p>CSV 다운로드부터 프로그램 실행까지, 아래 순서대로 진행해 주세요.</p></div></aside>
       <div class="steps">
-        <section class="step-card upload-card" aria-labelledby="upload-title"><div class="step-top"><span class="step-number">STEP 01</span><span class="step-icon" aria-hidden="true">↑</span></div><h2 id="upload-title">최신 CSV를 업로드하세요</h2><p>최신 CSV는 관리자가 등록합니다. 일반 사용자는 STEP 02부터 진행하세요.</p><div class="card-detail"><strong>관리자 전용 · GitHub에서 등록</strong><p>파일 한 개를 등록하면 자동으로 형식을 검사합니다. 검증과 배포에 성공한 파일만 최신 CSV로 제공하며, 실패하면 기존 운영 파일을 유지합니다.</p><details id="admin-guide"><summary>관리자 등록 안내</summary><p>① 아래 버튼으로 GitHub를 엽니다.<br>② CSV 한 개를 끌어놓고 변경사항을 커밋합니다.<br>③ 자동 검증·배포 완료 후 이 페이지를 새로고침합니다.</p><p>파일명에 대상 연월을 포함해 주세요. 예: 경비전표_숙소임차료_20261201_1.csv<br>최대 25MiB · 저장소 쓰기 권한 필요</p><a class="button purple" id="github-upload" href="https://github.com/sskim4912/aurora_portal/upload/main/rent/downloads" target="_blank" rel="noopener noreferrer">GitHub에서 CSV 등록 <span aria-hidden="true">↗</span></a><a class="admin-actions" href="https://github.com/sskim4912/aurora_portal/actions/workflows/pages.yml" target="_blank" rel="noopener noreferrer">검증·배포 결과 확인 ↗</a></details></div><small>GitHub 로그인과 저장소 권한으로 등록을 제한합니다. 웹페이지에서 파일을 직접 저장하지 않습니다.</small></section>
-        <section class="step-card" aria-labelledby="step1"><div class="step-top"><span class="step-number">STEP 02</span><span class="step-icon" aria-hidden="true">↓</span></div><h2 id="step1">최신 CSV를 다운로드하세요</h2><p>등록된 최신 CSV를 내려받아 PC 자동입력 프로그램에서 사용하세요.</p><div class="card-detail file-info" id="latest-info"><strong>경비전표_숙소임차료_20261107_1.csv</strong><p>기존 공통 파일 · 대상 월 2026-11 · 등록일 기록 없음<br>11,792 B · 데이터 60건 · 14개 열<br>2줄 헤더 · UTF-8 원본 유지</p></div><a class="button teal" id="csv-download" href="downloads/경비전표_숙소임차료_20261107_1.csv" download="경비전표_숙소임차료_20261107_1.csv">최신 CSV 다운로드 <span aria-hidden="true">↓</span></a><small>모든 사용자가 동일한 첨부 원본 CSV를 내려받습니다. 전표 생성 결과나 변환 파일이 아닙니다.</small><p id="download-status" class="status-message" role="status" aria-live="polite"></p></section>
-        <section class="step-card" aria-labelledby="step2"><div class="step-top"><span class="step-number">STEP 03</span><span class="step-icon" aria-hidden="true">↓</span></div><h2 id="step2">프로그램을 실행해 주세요</h2><p>링크된 파일을 바탕화면에 저장한 뒤, EXE 실행 파일을 실행해 주세요.</p><div class="card-detail"><strong>Windows PC에서 직접 실행</strong><p>OneDrive 공유 화면에서 다운로드한 뒤 실행하세요. EAS 로그인은 PC 프로그램에서 진행합니다.</p></div><a class="button primary" id="program-download" href="https://1drv.ms/u/c/aada2604ee5983ad/IQCDA2ymGuNdS4yapRTnLPqLAZZSCGvDHOTKGCrTj1ouiRM?e=YSmxbV" target="_blank" rel="noopener noreferrer"><span class="button-label">프로그램 다운로드 및 자동화 프로그램 실행</span> <span aria-hidden="true">↗</span><span class="sr-only"> (OneDrive, 새 탭)</span></a><small>공유 화면 열기 · 웹페이지에서 자동 실행하지 않습니다.</small></section>
+        <section class="step-card" aria-labelledby="step1"><div class="step-top"><span class="step-number">STEP 01</span><span class="step-icon" aria-hidden="true">↓</span></div><h2 id="step1">CSV를 다운로드하세요</h2><p>등록된 최신 CSV를 내려받아 PC 자동입력 프로그램에서 사용하세요.</p><div class="card-detail file-info" id="latest-info"><strong>경비전표_숙소임차료_20261107_1.csv</strong><p>기존 공통 파일 · 대상 월 2026-11 · 등록일 기록 없음<br>11,792 B · 데이터 60건 · 14개 열<br>2줄 헤더 · UTF-8 원본 유지</p></div><a class="button teal" id="csv-download" href="downloads/경비전표_숙소임차료_20261107_1.csv" download="경비전표_숙소임차료_20261107_1.csv">최신 CSV 다운로드 <span aria-hidden="true">↓</span></a><small>모든 사용자가 동일한 첨부 원본 CSV를 내려받습니다. 전표 생성 결과나 변환 파일이 아닙니다.</small><p id="download-status" class="status-message" role="status" aria-live="polite"></p></section>
+        <section class="step-card" aria-labelledby="step2"><div class="step-top"><span class="step-number">STEP 02</span><span class="step-icon" aria-hidden="true">↓</span></div><h2 id="step2">프로그램을 실행해 주세요</h2><p>링크된 파일을 바탕화면에 저장한 뒤, EXE 실행 파일을 실행해 주세요.</p><div class="card-detail"><strong>Windows PC에서 직접 실행</strong><p>OneDrive 공유 화면에서 다운로드한 뒤 실행하세요. EAS 로그인은 PC 프로그램에서 진행합니다.</p></div><a class="button primary" id="program-download" href="https://1drv.ms/u/c/aada2604ee5983ad/IQCDA2ymGuNdS4yapRTnLPqLAZZSCGvDHOTKGCrTj1ouiRM?e=YSmxbV" target="_blank" rel="noopener noreferrer"><span class="button-label">프로그램 다운로드 및 자동화 프로그램 실행</span> <span aria-hidden="true">↗</span><span class="sr-only"> (OneDrive, 새 탭)</span></a><small>공유 화면 열기 · 웹페이지에서 자동 실행하지 않습니다.</small></section>
       </div>
       <details id="preview-section" class="preview-card full-preview" aria-labelledby="preview-title"><summary class="preview-heading"><div class="preview-heading-title"><span class="eyebrow">CSV PREVIEW</span><h2 id="preview-title">CSV 전체 미리보기</h2></div><div class="preview-controls"><span id="preview-summary" class="badge">펼쳐서 확인</span><span class="preview-chevron" aria-hidden="true">⌄</span></div></summary><p>항목명 행을 기준으로 첫 데이터부터 마지막 입력 자료까지 모두 표시합니다. 원본 CSV의 값과 파일은 변경하지 않습니다.</p><p id="preview-status" class="status-message" role="status" aria-live="polite"></p><div class="table-scroll" tabindex="0" role="region" aria-label="CSV 전체 자료"><table><thead id="preview-head"></thead><tbody id="preview-body"></tbody></table></div></details>
       <details class="guide" id="program-guide">
         <summary>사용 전 확인해 주세요</summary>
         <div class="guide-content">
           <h2>프로그램 실행 방법</h2>
-          <p class="guide-intro">먼저 STEP 02에서 CSV를 PC에 저장하고, STEP 03의 프로그램 다운로드를 눌러 OneDrive에서 EAS_Rent_Voucher.exe를 다운로드해 주세요. 아래 번호는 안내해 주신 화면의 ①~⑨ 순서입니다.</p>
+          <p class="guide-intro">먼저 STEP 01에서 CSV를 PC에 저장하고, STEP 02의 프로그램 다운로드를 눌러 OneDrive에서 EAS_Rent_Voucher.exe를 다운로드해 주세요. 아래 번호는 안내해 주신 화면의 ①~⑨ 순서입니다.</p>
           <ol class="execution-steps">
             <li><strong>다운로드 창에서 ‘열기’를 누릅니다.</strong><p>브라우저 오른쪽 다운로드 목록에서 EAS_Rent_Voucher.exe 항목의 ‘열기’를 선택합니다.</p></li>
             <li><strong>추가 확인 창이 나타나면 ‘열기’를 선택합니다.</strong><p>‘이 파일로 무엇을 하시겠습니까?’ 안내가 다시 표시되는 경우 해당 파일의 ‘열기’를 누릅니다. 이미 CSV 선택창이 열렸다면 ⑧로 이동합니다.</p></li>
@@ -40,13 +39,13 @@
             <li><strong>신뢰 여부 확인 화면에서 아래쪽 화살표를 누릅니다.</strong><p>파일 이름과 출처를 확인하고, ‘삭제’ 버튼 옆의 펼침 화살표(∨)를 선택합니다.</p></li>
             <li><strong>신뢰할 수 있는 파일인 경우 ‘그래도 계속’을 누릅니다.</strong><p>확인한 프로그램에 한해 계속 진행합니다. 출처를 확인할 수 없다면 실행하지 말고 관리팀에 문의해 주세요.</p></li>
             <li><strong>다운로드 목록에서 ‘파일 열기’를 누릅니다.</strong><p>EAS_Rent_Voucher.exe의 ‘파일 열기’를 선택해 PC 프로그램을 실행합니다. 파일명 뒤의 (1), (2), (3)은 중복 다운로드 시 붙을 수 있습니다.</p></li>
-            <li><strong>자동 입력할 경비전표 CSV를 선택합니다.</strong><p>‘자동 입력할 경비전표 CSV 파일을 선택하세요’ 창에서 STEP 02에서 저장한 <span class="guide-filename">경비전표_숙소임차료_20261107_1.csv</span>를 선택합니다. 저장한 위치가 바탕화면이 아니라면 해당 폴더로 이동합니다.</p></li>
+            <li><strong>자동 입력할 경비전표 CSV를 선택합니다.</strong><p>‘자동 입력할 경비전표 CSV 파일을 선택하세요’ 창에서 STEP 01에서 저장한 <span class="guide-filename">경비전표_숙소임차료_20261107_1.csv</span>를 선택합니다. 저장한 위치가 바탕화면이 아니라면 해당 폴더로 이동합니다.</p></li>
             <li><strong>‘열기(O)’를 눌러 CSV 선택을 완료합니다.</strong><p>파일 이름을 확인한 후 ‘열기’를 누릅니다. 이후 EAS 로그인과 전표 작성·검토는 PC 프로그램의 실제 안내에 따라 진행합니다.</p></li>
           </ol>
           <p class="guide-note">브라우저 버전과 PC 설정에 따라 버튼 이름이나 경고 화면은 다를 수 있습니다. 이 웹페이지는 프로그램을 자동 실행하거나 다운로드·실행 완료 여부를 확인하지 않습니다.</p>
           <h3>함께 확인해 주세요</h3>
         </div>
-        <ul><li>프로그램은 Windows PC에서 직접 실행합니다. 웹페이지가 PC의 EXE를 자동 실행하지 않습니다.</li><li>CSV의 입력 순서 행·항목명 행·원본 인코딩을 보존합니다. 다운로드는 원본 바이트 그대로입니다.</li><li>최신 CSV는 관리자가 GitHub에서 등록합니다. 자동 검증과 배포가 끝나기 전까지 기존 운영 CSV가 유지됩니다. 공개 배포 후에는 파일 주소로 누구나 다운로드할 수 있습니다.</li><li>EAS 로그인과 전표 작성·검토는 PC 프로그램의 실제 동작에 따라 진행합니다.</li><li>웹페이지의 로그인 비밀번호를 EAS에 전달하거나 EAS 비밀번호로 사용하지 않습니다.</li><li>현재 접속 화면은 클라이언트 화면 잠금이며 서버 인증이나 파일 접근 통제가 아닙니다. 운영 인증에는 별도의 서버 세션 또는 인증 서비스가 필요합니다.</li></ul></details>
+        <ul><li>프로그램은 Windows PC에서 직접 실행합니다. 웹페이지가 PC의 EXE를 자동 실행하지 않습니다.</li><li>CSV의 입력 순서 행·항목명 행·원본 인코딩을 보존합니다. 다운로드는 원본 바이트 그대로입니다.</li><li>제공된 최신 CSV를 내려받아 PC 프로그램에서 선택해 주세요. 공개 배포 후에는 파일 주소로 누구나 다운로드할 수 있습니다.</li><li>EAS 로그인과 전표 작성·검토는 PC 프로그램의 실제 동작에 따라 진행합니다.</li><li>웹페이지의 로그인 비밀번호를 EAS에 전달하거나 EAS 비밀번호로 사용하지 않습니다.</li><li>현재 접속 화면은 클라이언트 화면 잠금이며 서버 인증이나 파일 접근 통제가 아닙니다. 운영 인증에는 별도의 서버 세션 또는 인증 서비스가 필요합니다.</li></ul></details>
       <p class="local-note">공통 CSV 다운로드 · 웹페이지에서 EXE 실행 및 EAS 전표 작성 없음</p>
     </section>
   </main>
