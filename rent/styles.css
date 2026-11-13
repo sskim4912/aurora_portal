@@ -112,3 +112,10 @@
   .step-card { grid-row: auto; grid-column: auto; grid-template-rows: auto auto auto minmax(160px, auto) 52px auto auto; gap: 16px; padding: 24px; }
 }
 @media (max-width: 390px) { .step-card { padding: 20px; } }
+
+.sort-controls { display: flex; gap: 3px; margin-top: 5px; }
+.sort-controls button { border: 1px solid #b9d1dd; border-radius: 4px; background: #fff; color: #355870; padding: 2px 7px; line-height: 1.5; }
+.sort-controls button[aria-pressed="true"] { background: #008b91; color: #fff; border-color: #008b91; }
+#preview-reset { margin: 0 0 8px; }
+.preview-mobile-sort { display: none; }
+@media(max-width:800px) { .preview-mobile-sort { display: block; margin: 12px 0; font-size: 12px; } #preview-mobile-sort { max-width:100%; padding:8px; border:1px solid #b9d1dd; border-radius:5px; background:#fff; } }

@@ -38,6 +38,22 @@ class GitHubCsvTest(unittest.TestCase):
             self.assertEqual(json.loads((self.output/'rent/latest.json').read_text())['sha256'],meta['sha256'])
             self.assertNotIn('old.csv',(self.output/'rent/index.html').read_text())
             self.assertEqual(len(list((self.output/'rent/downloads').glob('*.csv'))),1)
+    def test_authenticated_upload_becomes_shared_download(self):
+        import hashlib
+        folder=self.root/'rent/uploads';folder.mkdir()
+        data=sample('cp949')
+        meta=dict(filename='최신자료.csv',month='2026-11',count=3,size=len(data),sha256=hashlib.sha256(data).hexdigest(),registeredAt='2026-11-13T01:00:00Z')
+        (folder/'latest.csv').write_bytes(data);(folder/'latest.json').write_text(json.dumps(meta));self.commit()
+        actual=module.prepare(self.output,self.root)
+        self.assertEqual(actual['filename'],'최신자료.csv')
+        self.assertEqual((self.output/'rent/downloads/최신자료.csv').read_bytes(),data)
+        self.assertTrue((self.output/'rent/uploads/latest.json').exists())
+        self.assertIn('최신자료.csv',(self.output/'rent/index.html').read_text())
+        previous=(self.output/'rent/latest.json').read_bytes()
+        (folder/'latest.csv').write_bytes(b'uncommitted')
+        with self.assertRaises(ValueError):module.prepare(self.output,self.root)
+        self.assertEqual(previous,(self.output/'rent/latest.json').read_bytes())
+
     def test_invalid_and_multiple_uploads_leave_previous_output(self):
         module.prepare(self.output,self.root);previous=(self.output/'rent/latest.json').read_bytes()
         path=self.root/'rent/downloads/가상_20261201_1.csv';path.write_bytes(b'bad');self.commit()

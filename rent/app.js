@@ -1,10 +1,12 @@
-import {authenticateUpload, clearUploadSession, restoreUploadSession} from './workbook-upload.js?v=aligned-cards3';
+import {authenticateUpload, clearUploadSession, restoreUploadSession} from './workbook-upload.js?v=csv-sort4';
 import { parsePreview } from './csv-preview.js';
 import './shared-csv.js';
 
 const $ = (id) => document.getElementById(id);
 let previewRequest = null;
 let previewLoaded = false;
+let previewData = null;
+let previewSort = null;
 
 const SESSION_KEY = 'aurora-rent-session-v1';
 // This digest implements a prototype UI lock only, never server authorization.
@@ -70,6 +72,7 @@ $('logout').addEventListener('click', () => {
   try { sessionStorage.removeItem(SESSION_KEY); } catch { /* UI still returns to login. */ }
   previewRequest?.abort();
   previewLoaded = false;
+  previewData = null; previewSort = null;
   $('preview-section').open = false;
   $('preview-summary').textContent = '펼쳐서 확인';
   $('preview-head').replaceChildren();
@@ -109,26 +112,9 @@ async function loadPreview() {
     if (!response.ok) throw new Error('CSV 응답 오류');
     const parsed = parsePreview(await response.arrayBuffer());
     if (request.signal.aborted) return;
-    const header = document.createElement('tr');
-    for (const name of parsed.headers) {
-      const cell = document.createElement('th');
-      cell.scope = 'col';
-      cell.textContent = name;
-      header.append(cell);
-    }
-    $('preview-head').replaceChildren(header);
-    const fragment = document.createDocumentFragment();
-    for (const values of parsed.rows) {
-      const row = document.createElement('tr');
-      for (const [index, value] of values.entries()) {
-        const cell = document.createElement('td');
-        cell.dataset.label = parsed.headers[index];
-        cell.textContent = value;
-        row.append(cell);
-      }
-      fragment.append(row);
-    }
-    $('preview-body').replaceChildren(fragment);
+    previewData = parsed;
+    previewSort = null;
+    renderPreview();
     previewLoaded = true;
     $('preview-summary').textContent = `전체 ${parsed.count.toLocaleString('ko-KR')}건 · ${parsed.headers.length}개 열`;
     status('preview-status', `총 ${parsed.count.toLocaleString('ko-KR')}건을 마지막 행까지 모두 표시했습니다.`, 'success');
@@ -138,6 +124,62 @@ async function loadPreview() {
     status('preview-status', 'CSV 미리보기를 불러오지 못했습니다. 새로고침해 다시 시도해 주세요. 원본 CSV 다운로드는 별도로 이용할 수 있습니다.', 'error');
   }
 }
+
+const textOrder = new Intl.Collator('ko-KR', {numeric:true, sensitivity:'base'});
+function sortedPreviewRows() {
+  if (!previewSort) return previewData.rows;
+  const {index, direction} = previewSort;
+  return previewData.rows.map((row, order)=>({row, order})).sort((a,b)=>{
+    let compared;
+    if (previewData.headers[index] === '금액') {
+      const amount = value => Number(value.replace(/[,\s₩원]/g, ''));
+      const x=amount(a.row[index]), y=amount(b.row[index]);
+      compared = Number.isFinite(x) && Number.isFinite(y) ? x-y : textOrder.compare(a.row[index],b.row[index]);
+    } else compared = textOrder.compare(a.row[index],b.row[index]);
+    return (direction === 'ascending' ? compared : -compared) || a.order-b.order;
+  }).map(item=>item.row);
+}
+function renderPreview() {
+  if (!previewData) return;
+  $('preview-mobile-sort').value=previewSort ? previewSort.index+':'+previewSort.direction : '';
+  const header = document.createElement('tr');
+  for (const [index,name] of previewData.headers.entries()) {
+    const cell=document.createElement('th'); cell.scope='col';
+    const title=document.createElement('span');title.textContent=name;cell.append(title);
+    if (['거래처','금액','사용내역'].includes(name)) {
+      cell.setAttribute('aria-sort', previewSort?.index===index ? previewSort.direction : 'none');
+      const controls=document.createElement('span');controls.className='sort-controls';
+      for(const [direction,symbol,label] of [['ascending','↑','오름차순'],['descending','↓','내림차순']]) {
+        const button=document.createElement('button');button.type='button';button.textContent=symbol;
+        button.setAttribute('aria-label',name+' '+label);button.title=name+' '+label;
+        button.setAttribute('aria-pressed',String(previewSort?.index===index && previewSort.direction===direction));
+        button.addEventListener('click',()=>{
+          previewSort={index,direction};renderPreview();
+          status('preview-status', name+' '+label+' · 미리보기만 정렬했습니다. 원본 CSV는 유지됩니다.','success');
+          document.querySelector('button[aria-label="'+name+' '+label+'"]').focus({preventScroll:true});
+        });controls.append(button);
+      }cell.append(controls);
+    }header.append(cell);
+  }
+  $('preview-head').replaceChildren(header);
+  const fragment=document.createDocumentFragment();
+  for(const values of sortedPreviewRows()) {
+    const row=document.createElement('tr');
+    for(const [index,value] of values.entries()) {
+      const cell=document.createElement('td');cell.dataset.label=previewData.headers[index];cell.textContent=value;row.append(cell);
+    }fragment.append(row);
+  }$('preview-body').replaceChildren(fragment);
+}
+$('preview-mobile-sort').addEventListener('change',event=>{
+  const [index,direction]=event.target.value.split(':');
+  previewSort=direction ? {index:Number(index),direction} : null;renderPreview();
+  status('preview-status','미리보기 순서를 변경했습니다. 원본 CSV는 유지됩니다.','success');
+});
+
+$('preview-reset').addEventListener('click',()=>{
+  previewSort=null;renderPreview();
+  status('preview-status','원본 CSV 순서로 표시했습니다.','success');
+});
 
 // Native same-origin download preserves the static file bytes and filename.
 // This is a shared file link; the UI lock does not restrict direct file access.
@@ -153,7 +195,7 @@ try {
 }
 
 document.addEventListener('csv-latest-changed', () => {
-  previewRequest?.abort(); previewLoaded=false;
+  previewRequest?.abort(); previewLoaded=false; previewData=null; previewSort=null;
   $('preview-head').replaceChildren(); $('preview-body').replaceChildren();
   $('preview-summary').textContent='펼쳐서 확인';
   if ($('preview-section').open) loadPreview();

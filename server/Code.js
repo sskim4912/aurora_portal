@@ -1,8 +1,8 @@
 /** Free Apps Script relay. Secrets stay in Script Properties, never in Pages. */
 const REPO = 'sskim4912/aurora_portal';
 const BRANCH = 'main';
-const FILE_PATH = 'rent/workbooks/latest.xlsx';
-const META_PATH = 'rent/workbooks/latest.json';
+const FILE_PATH = 'rent/uploads/latest.csv';
+const META_PATH = 'rent/uploads/latest.json';
 const MAX_FILE = 5 * 1024 * 1024;
 const SESSION_SECONDS = 21600;
 function digest(value) {
@@ -33,7 +33,7 @@ function github(path, method, body) {
 function authorize(session) {
   if (typeof session !== 'string' || !/^[a-f0-9]{64}$/.test(session) ||
       !CacheService.getScriptCache().get('session:' + digest(session)))
-    fail('로그인이 만료되었습니다. 로그아웃 후 다시 접속해 주세요.');
+    fail('로그인이 만료되었습니다. 업로드 버튼에서 다시 인증해 주세요.');
 }
 function login(input) {
   const p = configuration();
@@ -44,30 +44,65 @@ function login(input) {
   CacheService.getScriptCache().put('session:' + digest(session), 'yes', SESSION_SECONDS);
   return {session, expiresAt: Date.now() + SESSION_SECONDS * 1000};
 }
-function workbook(input) {
+function csvFile(input) {
   if (typeof input.filename !== 'string' || input.filename.length > 180 ||
-      /[\/\\\x00-\x1f\x7f]/.test(input.filename) || !/\.xlsx$/i.test(input.filename))
-    fail('엑셀 .xlsx 파일을 선택해 주세요.');
+      /[\/\\\x00-\x1f\x7f]/.test(input.filename) || !/\.csv$/i.test(input.filename))
+    fail('CSV .csv 파일을 선택해 주세요.');
   if (typeof input.content !== 'string' || input.content.length > Math.ceil(MAX_FILE / 3) * 4 ||
-      !/^[A-Za-z0-9+/]+={0,2}$/.test(input.content)) fail('엑셀 파일은 최대 5MiB입니다.');
-  let bytes, parts;
-  try {
-    bytes = Utilities.base64Decode(input.content);
-    if (!bytes.length || bytes.length > MAX_FILE) fail('size');
-    parts = Utilities.unzip(Utilities.newBlob(bytes, 'application/zip', 'workbook.zip'));
-  } catch (_) { fail('열 수 있는 .xlsx 엑셀 파일인지 확인해 주세요.'); }
-  const names = parts.map(p => p.getName());
-  if (!['[Content_Types].xml', 'xl/workbook.xml'].every(n => names.includes(n)) ||
-      names.some(n => /(^|\/)vbaProject\.bin$/i.test(n)) ||
-      parts.reduce((sum, p) => sum + p.getBytes().length, 0) > 20 * 1024 * 1024)
-    fail('일반 .xlsx 파일만 지원하며 압축 해제 크기는 최대 20MiB입니다.');
-  return bytes;
+      !/^[A-Za-z0-9+/]+={0,2}$/.test(input.content)) fail('CSV 파일은 최대 5MiB입니다.');
+  let bytes;
+  try { bytes = Utilities.base64Decode(input.content); }
+  catch (_) { fail('CSV 파일 내용을 확인해 주세요.'); }
+  if (!bytes.length || bytes.length > MAX_FILE) fail('CSV 파일은 최대 5MiB입니다.');
+  let text = Utilities.newBlob(bytes).getDataAsString('UTF-8');
+  let encoding = 'UTF-8';
+  if (text.indexOf('\ufffd') >= 0) {
+    text = Utilities.newBlob(bytes).getDataAsString('MS949'); encoding = 'CP949 / EUC-KR';
+  }
+  text = text.replace(/^\ufeff/, '');
+  if (/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ufffd]/.test(text)) fail('CSV 인코딩 또는 제어 문자를 확인해 주세요.');
+  let rows = [], row = [], cell = '', state = 'start', touched = false;
+  function addCell() { row.push(cell); cell = ''; if (row.length > 14) fail('CSV는 14개 열이어야 합니다.'); }
+  function addRow() { addCell(); if (row.length !== 14) fail('CSV는 14개 열이어야 합니다.'); rows.push(row); row = []; touched = false; }
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (state === 'quoted') {
+      if (ch === '"') {
+        if (text[i+1] === '"') { cell += '"'; i++; } else state = 'closed';
+      } else cell += ch;
+      continue;
+    }
+    if (ch === ',') { addCell(); state = 'start'; touched = true; }
+    else if (ch === '\r' || ch === '\n') {
+      if (ch === '\r' && text[i+1] === '\n') i++;
+      addRow(); state = 'start';
+    } else if (ch === '"' && state === 'start') { state = 'quoted'; touched = true; }
+    else {
+      if (ch === '"' || state === 'closed') fail('CSV 인용부호 형식을 확인해 주세요.');
+      cell += ch; state = 'plain'; touched = true;
+    }
+  }
+  if (state === 'quoted') fail('CSV 인용부호가 닫히지 않았습니다.');
+  if (touched || row.length || cell) addRow();
+  const order = '반영순서,1,3,4,5,6,7,16,19,20,22,23,24,28'.split(',');
+  const headers = '순번,입력번호,증빙종류,거래처구분,거래처,작성일자,금액,리스예외사유,비용구분,계정과목,사용내역,발생일자,만기일자,지불유형'.split(',');
+  if (rows.length < 3 || rows[0].some((v,i)=>v!==order[i]) || rows[1].some((v,i)=>v!==headers[i]))
+    fail('CSV는 반영순서·항목명의 2줄 헤더와 데이터가 필요합니다.');
+  const numbers = new Set();
+  rows.slice(2).forEach(values => {
+    if (!/^[1-9][0-9]*$/.test(values[0]) || numbers.has(values[0])) fail('CSV 순번은 중복 없는 양의 정수여야 합니다.');
+    numbers.add(values[0]);
+  });
+  const date = /^(20\d{2})[.\-/](0[1-9]|1[0-2])/.exec(rows[2][5]);
+  if (!date) fail('CSV 작성일자에서 대상 연월을 확인해 주세요.');
+  return {bytes, count: rows.length-2, encoding, month: date[1]+'-'+date[2]};
 }
 function upload(input) {
   authorize(input.session);
   if (typeof input.requestId !== 'string' || !/^[a-f0-9-]{36}$/.test(input.requestId))
     fail('업로드 요청을 다시 시작해 주세요.');
-  const bytes = workbook(input);
+  const checked = csvFile(input);
+  const bytes = checked.bytes;
   const sha256 = digest(bytes);
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(1000)) fail('다른 파일을 저장 중입니다. 잠시 후 다시 시도해 주세요.');
@@ -92,13 +127,14 @@ function upload(input) {
       }
     }
     const meta = {filename: input.filename, size: bytes.length, sha256,
+      count: checked.count, encoding: checked.encoding, month: checked.month,
       registeredAt: new Date().toISOString(), requestId: input.requestId};
     const blob = github('/git/blobs', 'post', {content: input.content, encoding: 'base64'});
     const tree = github('/git/trees', 'post', {base_tree: parent.tree.sha, tree: [
       {path: FILE_PATH, mode: '100644', type: 'blob', sha: blob.sha},
       {path: META_PATH, mode: '100644', type: 'blob', content: JSON.stringify(meta) + '\n'}
     ]});
-    const commit = github('/git/commits', 'post', {message: 'Update latest rent workbook', tree: tree.sha, parents: [ref.object.sha]});
+    const commit = github('/git/commits', 'post', {message: 'Update latest rent CSV', tree: tree.sha, parents: [ref.object.sha]});
     github('/git/refs/heads/' + BRANCH, 'patch', {sha: commit.sha, force: false});
     const result = Object.assign(meta, {commit: commit.sha, downloadUrl: rawUrl(commit.sha)});
     p.setProperty('LAST_UPLOAD', JSON.stringify(result));
@@ -118,7 +154,7 @@ function doPost(event) {
     result = {ok: true, data: result};
   } catch (error) {
     // Do not echo arbitrary exception text: credentials or upstream content must never reach the client.
-    const known = /^(업로드|이름|로그인|엑셀|열 수|일반|다른|GitHub|지원하지|요청|잘못된)/;
+    const known = /^(업로드|이름|로그인|CSV|엑셀|열 수|일반|다른|GitHub|지원하지|요청|잘못된)/;
     result = {ok: false, error: known.test(error.message) ? error.message : '저장에 실패했습니다. 잠시 후 다시 시도해 주세요.'};
   }
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);

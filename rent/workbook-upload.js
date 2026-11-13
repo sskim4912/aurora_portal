@@ -1,3 +1,4 @@
+import {parsePreview} from './csv-preview.js';
 const $ = id => document.getElementById(id);
 const KEY = 'aurora-workbook-upload-session';
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -67,12 +68,13 @@ export function restoreUploadSession(name) {
 }
 function validMeta(meta) {
   return meta && typeof meta.filename === 'string' && meta.filename.length <= 180 &&
-    !/[/\\\x00-\x1f\x7f]/.test(meta.filename) && /\.xlsx$/i.test(meta.filename) &&
+    !/[/\\\x00-\x1f\x7f]/.test(meta.filename) && /\.csv$/i.test(meta.filename) &&
     Number.isSafeInteger(meta.size) && meta.size > 0 && meta.size <= MAX_BYTES &&
+    Number.isSafeInteger(meta.count) && meta.count > 0 && /^20\d{2}-(0[1-9]|1[0-2])$/.test(meta.month) && typeof meta.encoding === 'string' &&
     /^[a-f0-9]{64}$/.test(meta.sha256) && Number.isFinite(Date.parse(meta.registeredAt));
 }
 function showLatest(meta, url) {
-  if (!validMeta(meta)) throw Error('최신 엑셀 정보를 확인할 수 없습니다.');
+  if (!validMeta(meta)) throw Error('최신 CSV 정보를 확인할 수 없습니다.');
   latest = {meta, url};
   $('workbook-info').textContent = `${meta.filename}\n등록일 ${new Date(meta.registeredAt).toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'})} (한국시간) · ${meta.size.toLocaleString('ko-KR')} B`;
   $('workbook-download').hidden = false;
@@ -82,13 +84,13 @@ async function refreshLatest() {
   if (refreshing || busy || document.hidden) return;
   refreshing = true;
   try {
-    const response = await fetch(new URL('workbooks/latest.json', import.meta.url), {cache: 'no-store'});
+    const response = await fetch(new URL('uploads/latest.json', import.meta.url), {cache: 'no-store'});
     if (response.status === 404) return;
     if (!response.ok) throw Error();
     const meta = await response.json();
     // Do not replace a just-uploaded result with a Pages version still deploying.
     if (latest && Date.parse(meta.registeredAt) <= Date.parse(latest.meta.registeredAt)) return;
-    showLatest(meta, new URL('workbooks/latest.xlsx', import.meta.url).href);
+    showLatest(meta, new URL('uploads/latest.csv', import.meta.url).href);
   } catch (_) { /* Retain the last successful download. */ }
   finally { refreshing = false; }
 }
@@ -108,22 +110,22 @@ $('workbook-upload-form').addEventListener('submit', async event => {
   const file = $('workbook-file').files[0];
   if (!session || session.expiresAt <= Date.now()) {
     showUploadAccess(false);
-    status.textContent = '업로드 인증이 만료되었습니다. 엑셀 업로드 버튼에서 다시 확인해 주세요.';
+    status.textContent = '업로드 인증이 만료되었습니다. CSV 업로드 버튼에서 다시 확인해 주세요.';
     $('workbook-auth-dialog').showModal();
     return;
   }
-  if (!file || !/\.xlsx$/i.test(file.name) || /[/\\\x00-\x1f\x7f]/.test(file.name) || file.name.length > 180 || !file.size || file.size > MAX_BYTES) {
-    status.textContent = '최대 5MiB의 엑셀 .xlsx 파일을 선택해 주세요.'; return;
+  if (!file || !/\.csv$/i.test(file.name) || /[/\\\x00-\x1f\x7f]/.test(file.name) || file.name.length > 180 || !file.size || file.size > MAX_BYTES) {
+    status.textContent = '최대 5MiB의 CSV .csv 파일을 선택해 주세요.'; return;
   }
   busy = true;
   const ticket = revision;
   $('workbook-submit').disabled = true;
   $('workbook-file').disabled = true;
-  status.textContent = '엑셀 파일을 확인하고 저장하고 있습니다…';
+  status.textContent = 'CSV 파일을 확인하고 저장하고 있습니다…';
   status.dataset.state = '';
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    if (bytes[0] !== 0x50 || bytes[1] !== 0x4b) throw Error('일반 .xlsx 엑셀 파일을 선택해 주세요.');
+    parsePreview(bytes);
     const sha256 = await hash(bytes);
     retry ||= {requestId: crypto.randomUUID(), sha256, filename: file.name};
     if (retry.sha256 !== sha256 || retry.filename !== file.name) throw Error('파일을 다시 선택해 주세요.');
@@ -131,9 +133,10 @@ $('workbook-upload-form').addEventListener('submit', async event => {
       content: base64(bytes), requestId: retry.requestId});
     if (ticket !== revision) return;
     if (!validMeta(result) || result.sha256 !== sha256 || result.size !== bytes.length || result.filename !== file.name ||
-        !/^[a-f0-9]{40}$/.test(result.commit) || result.downloadUrl !== `https://raw.githubusercontent.com/sskim4912/aurora_portal/${result.commit}/rent/workbooks/latest.xlsx`)
+        !/^[a-f0-9]{40}$/.test(result.commit) || result.downloadUrl !== `https://raw.githubusercontent.com/sskim4912/aurora_portal/${result.commit}/rent/uploads/latest.csv`)
       throw Error('저장 결과를 확인하지 못했습니다. 같은 파일로 다시 시도해 주세요.');
     showLatest(result, result.downloadUrl);
+    document.dispatchEvent(new CustomEvent('csv-uploaded', {detail: {meta: result, url: result.downloadUrl}}));
     status.textContent = 'GitHub에 저장했습니다. 지금 내려받을 수 있으며, 다른 PC에는 사이트 배포 후 반영됩니다.';
     status.dataset.state = 'success';
     retry = null;
@@ -151,17 +154,17 @@ $('workbook-download').addEventListener('click', async () => {
   const status = $('workbook-download-status');
   const selected = latest;
   $('workbook-download').disabled = true;
-  status.textContent = '엑셀 파일을 준비하고 있습니다…';
+  status.textContent = 'CSV 파일을 준비하고 있습니다…';
   try {
     const response = await fetch(selected.url, {cache: 'no-store'});
     if (!response.ok) throw Error();
     const data = await response.arrayBuffer();
     if (data.byteLength !== selected.meta.size || await hash(data) !== selected.meta.sha256) throw Error();
-    const href = URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    const href = URL.createObjectURL(new Blob([data], {type: 'text/csv'}));
     const link = document.createElement('a'); link.href = href; link.download = selected.meta.filename;
     document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(href), 60000);
     status.textContent = '다운로드를 요청했습니다. 브라우저 다운로드 목록을 확인해 주세요.';
-  } catch (_) { status.textContent = '최신 엑셀을 내려받지 못했습니다. 잠시 후 다시 시도해 주세요.'; }
+  } catch (_) { status.textContent = '최신 CSV을 내려받지 못했습니다. 잠시 후 다시 시도해 주세요.'; }
   finally { $('workbook-download').disabled = false; }
 });
 refreshLatest();
@@ -189,7 +192,7 @@ $('workbook-auth-form').addEventListener('submit', async event => {
   try {
     await authenticateUpload('김성석', password);
     $('workbook-auth-dialog').close();
-    $('workbook-upload-status').textContent = '업로드할 엑셀 파일을 선택해 주세요.';
+    $('workbook-upload-status').textContent = '업로드할 CSV 파일을 선택해 주세요.';
     $('workbook-file').focus();
   } catch (error) {
     $('workbook-auth-error').textContent = error.message;

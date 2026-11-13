@@ -16,6 +16,7 @@ import subprocess
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from workbooks import validate_optional_workbook
+from uploaded_csv import select_upload
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 25 * 1024 * 1024
@@ -102,10 +103,15 @@ def select_latest(root=ROOT):
 
 
 def prepare(output, root=ROOT):
-    path, commit, registered = select_latest(root)
-    data = path.read_bytes()
-    metadata = validate(data, path.name)
-    metadata.update(registeredAt=registered, version=commit, href='downloads/' + path.name)
+    uploaded = select_upload(root, git, validate)
+    if uploaded:
+        path, metadata = uploaded
+        registered = metadata['registeredAt']
+    else:
+        path, commit, registered = select_latest(root)
+        metadata = validate(path.read_bytes(), path.name)
+        metadata.update(registeredAt=registered, version=commit, href='downloads/' + path.name)
+    filename = metadata['filename']
     validate_optional_workbook(root)
     output = output.resolve()
     # Validate everything before touching an existing successful output.
@@ -115,28 +121,28 @@ def prepare(output, root=ROOT):
     shutil.copyfile(root / 'index.html', output / 'index.html')
     shutil.copytree(root / 'assets', output / 'assets', dirs_exist_ok=True)
     # Old uploads remain in Git history; publish only the selected, validated original.
-    shutil.copytree(root / 'rent', output / 'rent', dirs_exist_ok=True, ignore=shutil.ignore_patterns('downloads', 'latest.json'))
+    shutil.copytree(root / 'rent', output / 'rent', dirs_exist_ok=True, ignore=lambda folder, names: {'downloads','latest.json'} if Path(folder) == root/'rent' else set())
     downloads = output / 'rent/downloads'
     if downloads.exists(): shutil.rmtree(downloads)
     downloads.mkdir(parents=True)
-    shutil.copyfile(path, downloads / path.name)
+    shutil.copyfile(path, downloads / filename)
     (output / 'rent/latest.json').write_text(json.dumps(metadata, ensure_ascii=False) + '\n', encoding='utf-8')
     # Bake the selected link into HTML too: downloads survive metadata/network failure.
     page = output / 'rent/index.html'
     source = page.read_text(encoding='utf-8')
-    href = 'downloads/' + quote(path.name)
+    href = 'downloads/' + quote(filename)
     source = re.sub(r'(id="csv-download" href=")[^"]*(" download=")[^"]*',
-                    lambda m: m[1] + href + m[2] + html.escape(path.name, quote=True), source)
+                    lambda m: m[1] + href + m[2] + html.escape(filename, quote=True), source)
     source = re.sub(r'(<span class="guide-filename">).*?(</span>)',
-                    lambda m: m[1] + html.escape(path.name) + m[2], source)
-    info = (f"<strong>{html.escape(path.name)}</strong><p>대상 월 {metadata['month']} · "
+                    lambda m: m[1] + html.escape(filename) + m[2], source)
+    info = (f"<strong>{html.escape(filename)}</strong><p>대상 월 {metadata['month']} · "
             f"등록일 {html.escape(registered)}<br>데이터 {metadata['count']}건 · "
             f"{metadata['size']:,} B · {metadata['encoding']} 원본 유지</p>")
     source = re.sub(r'(<div class="card-detail file-info" id="latest-info">).*?(</div>)',
                     lambda m: m[1] + info + m[2], source)
     page.write_text(source, encoding='utf-8')
     (output / '.nojekyll').touch()
-    assert hashlib.sha256((downloads / path.name).read_bytes()).hexdigest() == metadata['sha256']
+    assert hashlib.sha256((downloads / filename).read_bytes()).hexdigest() == metadata['sha256']
     return metadata
 
 
