@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aurora Project 관리팀 업무 포털</title>
 
+  <link rel="stylesheet" href="assets/menu-qr.css">
+  <script src="assets/menu-qr.js" defer></script>
+
   <style>
     * { box-sizing: border-box; }
 
@@ -165,7 +168,8 @@
 
     .icon svg { width: 26px; height: 26px; }
 
-    .card:nth-child(even) .icon {
+    .card:nth-child(even) .icon,
+    .menu-card:nth-child(even) .icon {
       color: #009aa0;
       background: #edf8f7;
     }
@@ -361,7 +365,8 @@
 
       <div class="cards">
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://sskim4912.github.io/new_meal/meal_order_v2/index.html?start=new&amp;refresh=20261013-home2"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-0">
@@ -378,8 +383,16 @@
           <h3 id="title-0">식사 신청</h3>
           <p>조식·중식·석식 신청과 내역을 확인하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="식사 신청 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">식사 신청</span>
+            <img src="assets/qr/title-0.png" alt="식사 신청 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://receipt.sskim4912.workers.dev/"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-1">
@@ -396,8 +409,16 @@
           <h3 id="title-1">영수증 관리</h3>
           <p>영수증을 등록하고 정산 내역을 관리하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="영수증 관리 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">영수증 관리</span>
+            <img src="assets/qr/title-1.png" alt="영수증 관리 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://docs.google.com/forms/d/e/1FAIpQLSeq2-qQX9BFUkTsql3q6c-Rwe030ApRGYZndaFP1PwKAfFSVw/viewform?pli=1"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-2">
@@ -414,8 +435,16 @@
           <h3 id="title-2">숙소 민원</h3>
           <p>숙소 불편사항과 생활 민원을 접수하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="숙소 민원 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">숙소 민원</span>
+            <img src="assets/qr/title-2.png" alt="숙소 민원 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://auroraproj.dothome.co.kr"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-3">
@@ -432,6 +461,13 @@
           <h3 id="title-3">차량 운행·사고접수</h3>
           <p>차량 운행을 기록하고 사고를 접수하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="차량 운행·사고접수 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">차량 운행·사고접수</span>
+            <img src="assets/qr/title-3.png" alt="차량 운행·사고접수 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
         <article class="card pending" aria-labelledby="title-4">
           <div class="card-top">
@@ -463,7 +499,8 @@
           <p>출장비 신청과 내역을 확인하세요.</p>
         </article>
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://permit-daesan-461e8.web.app/"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-6">
@@ -480,8 +517,16 @@
           <h3 id="title-6">현장 출입 신청</h3>
           <p>방문 및 현장 출입을 신청하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="현장 출입 신청 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">현장 출입 신청</span>
+            <img src="assets/qr/title-6.png" alt="현장 출입 신청 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://restaurant-ledger.sskim4912.workers.dev/"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-7">
@@ -498,6 +543,13 @@
           <h3 id="title-7">식당 장부 정산</h3>
           <p>쉽고 편리하게 장부를 정산하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="식당 장부 정산 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">식당 장부 정산</span>
+            <img src="assets/qr/title-7.png" alt="식당 장부 정산 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
         <article class="card pending" aria-labelledby="title-8">
           <div class="card-top">
@@ -514,7 +566,8 @@
           <p>숙소 관리비 내역을 확인하고 정산하세요.</p>
         </article>
 
-        <a class="card" href="rent/" target="_blank" rel="noopener noreferrer" aria-labelledby="title-9">
+        <div class="menu-card">
+<a class="card" href="rent/" target="_blank" rel="noopener noreferrer" aria-labelledby="title-9">
           <div class="card-top">
             <span class="icon">
               <svg fill="none" stroke="currentColor" stroke-width="1.5"
@@ -528,8 +581,16 @@
           <h3 id="title-9">숙소 임차료</h3>
           <p>숙소 임차료 전표를 작성합니다.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="숙소 임차료 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">숙소 임차료</span>
+            <img src="assets/qr/title-9.png" alt="숙소 임차료 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
-        <a class="card"
+        <div class="menu-card">
+<a class="card"
            href="https://aurora-asset-manager.sskim4912.workers.dev/"
            target="_blank" rel="noopener noreferrer"
            aria-labelledby="title-10">
@@ -546,6 +607,13 @@
           <h3 id="title-10">비품자산 관리</h3>
           <p>비품과 자산을 등록하고 관리하세요.</p>
         </a>
+          <button class="menu-qr" type="button" aria-label="비품자산 관리 휴대폰 접속 QR코드 확대" aria-expanded="false">
+            <span class="menu-qr-title">비품자산 관리</span>
+            <img src="assets/qr/title-10.png" alt="비품자산 관리 접속 QR코드" width="400" height="400">
+            <span class="menu-qr-caption">휴대폰으로 열기</span>
+            <span class="menu-qr-hint">클릭하여 고정 · 다시 클릭하면 닫기</span>
+          </button>
+        </div>
 
       </div>
     </section>

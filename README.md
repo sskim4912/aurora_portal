@@ -37,3 +37,11 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory _site
 `scripts/prepare_rent.py`는 커밋된 최신 CSV를 기준으로 사이트를 만듭니다. 실제 CSV 자료를 로그·예제·공유용 캡처에 포함하지 않습니다. 브라우저 테스트 `tests/github-browser.cjs`는 가상 CSV만 사용하며 로컬 검증 사이트에서 원본 대신 가상 응답을 주입합니다. 별도 Playwright 설치가 필요하면 기존 설치 경로를 `PLAYWRIGHT_MODULE`로 지정합니다.
 
 배포는 main 푸시 시 기존 Pages workflow로 자동 진행됩니다. 공개 산출물은 `index.html`, `assets/`, `rent/`, `.nojekyll`이며 서버·테스트·개발 설정은 포함하지 않습니다. Firebase에 만들었던 계정·데이터베이스는 이 앱에서 호출하지 않으며 삭제나 요금제 변경도 자동으로 하지 않습니다.
+
+## 메뉴 휴대폰 접속 QR
+
+연결된 메뉴 8개의 오른쪽 아래에 로컬 QR 이미지(`assets/qr/`)를 표시합니다. 마우스를 올리면 카드 너비의 80%로 확대하고, 클릭하면 고정합니다. 다시 클릭하거나 바깥 클릭·Esc로 닫으며, 다른 QR을 클릭하면 이전 QR은 닫힙니다. QR 버튼은 메뉴 링크와 분리되어 있어 메뉴를 열지 않습니다. 화면 너비 600px 이하에서는 QR을 숨깁니다.
+
+QR에는 메뉴의 전체 HTTPS 주소가 들어갑니다. 상대 경로 `rent/`는 운영 주소 `https://sskim4912.github.io/aurora_portal/rent/`를 사용합니다. 메뉴 주소를 바꾸면 해당 `assets/qr/title-N.png`도 함께 재생성해야 합니다. 이미지는 QR 오류 복구 M, 흰색 여백 4모듈로 생성했으며 외부 QR 서비스에 접속하지 않습니다.
+
+사이트 생성 및 8003번 로컬 서버 시작 후 `node tests/menu-qr-browser.cjs`로 확대·고정·닫기·키보드·모바일 숨김을 검증할 수 있습니다. 기존 브라우저 테스트와 동일하게 Playwright와 `/usr/bin/chromium`이 필요합니다.
