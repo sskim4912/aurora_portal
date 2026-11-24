@@ -35,24 +35,18 @@
 
     .header-brands { display: flex; align-items: center; gap: 24px; min-width: 0; }
 
-    .brand { display: flex; align-items: center; flex-shrink: 0; }
+    .brand { display: flex; align-items: center; flex-shrink: 0; font-size: 22px; font-weight: 700; color: #192f49; }
 
     .erp-link {
       display: flex;
       align-items: center;
       min-height: 44px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #0872a7;
       background: #fff;
       border-radius: 4px;
       flex-shrink: 0;
-    }
-
-    .erp-logo { display: block; width: 220px; height: auto; }
-
-    .gs-logo {
-      display: block;
-      width: 190px;
-      height: 76px;
-      object-fit: contain;
     }
 
     .header-note {
@@ -254,9 +248,10 @@
 
     @media (max-width: 600px) {
       .site-header { height: 74px; padding: 0 14px; }
-      .gs-logo { width: 108px; height: 44px; }
-      .header-brands { gap: 8px; }
-      .erp-logo { width: clamp(112px, 34vw, 160px); }
+      .brand { font-size: 16px; }
+      .site-header { height: auto; min-height: 74px; gap: 8px; padding-top: 10px; padding-bottom: 10px; }
+      .header-brands { gap: 4px; flex-direction: column; align-items: flex-start; }
+      .erp-link { font-size: 13px; min-height: 28px; }
       .header-note { font-size: 10px; }
 
       .project-banner { padding: 20px 18px; }
@@ -337,15 +332,13 @@
   <header class="site-header">
     <div class="header-brands">
     <a class="brand" href="./" aria-label="관리팀 업무 포털 홈">
-      <img class="gs-logo"
-           src="https://raw.githubusercontent.com/sskim4912/receipt/main/src/assets/gs-construction-logo.png"
-           alt="GS건설">
+      Aurora Project(충남)
     </a>
     <a class="erp-link"
        href="https://sso.gsenc.com/sso/std/ssoLogin_pin.jsp"
        target="_blank" rel="noopener noreferrer"
-       aria-label="SMART ERP 4.0 로그인 (새 창)">
-      <img class="erp-logo" src="assets/smart-erp.png" alt="SMART ERP 4.0">
+       aria-label="SMART EP 4.0 바로가기 (새 창)">
+      SMART EP 4.0 바로가기
     </a>
     </div>
     <span class="header-note">현장 업무 포털</span>
