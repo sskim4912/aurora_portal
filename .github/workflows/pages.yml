@@ -25,9 +25,9 @@ jobs:
       - name: Validate CSV and prepare public files
         run: python3 scripts/prepare_rent.py --output _site
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
